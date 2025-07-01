@@ -1,0 +1,32 @@
+{
+  "name": "sistema-monitoreo-typescript",
+  "version": "1.0.0",
+  "description": "Sistema de Monitoreo convertido de Python a TypeScript",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node index.ts",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "lint": "eslint . --ext .ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0"
+  },
+  "keywords": [
+    "typescript",
+    "monitoring",
+    "system",
+    "ddd",
+    "mining"
+  ],
+  "author": "Sistema Monitoreo Team",
+  "license": "MIT"
+}
