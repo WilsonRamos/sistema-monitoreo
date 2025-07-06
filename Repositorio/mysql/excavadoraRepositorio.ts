@@ -1,4 +1,5 @@
-import { IExcavadoraRepositorio } from 'Dominio.monitoreo.interfacesRepositorio.IExcavadoraRepositorio';
+import { IExcavadoraRepositorio } from '../../Dominio/monitoreo/interfacesRepositorio/iExcavadoraRepositorio';
 
-export class ExcavadoraRepositorio(IExcavadoraRepositorio) {
+export class ExcavadoraRepositorio extends IExcavadoraRepositorio {
     // TODO: Implement method
+}

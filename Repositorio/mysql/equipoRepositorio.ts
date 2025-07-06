@@ -1,4 +1,5 @@
-import { IEquipoRepositorio } from 'Dominio.monitoreo.interfacesRepositorio.IEquipoRepositorio';
+import { IEquipoRepositorio } from '../../Dominio/monitoreo/interfacesRepositorio/iEquipoRepositorio';
 
-export class EquipoRepositorio(IEquipoRepositorio) {
+export class EquipoRepositorio extends IEquipoRepositorio {
     // TODO: Implement method
+}

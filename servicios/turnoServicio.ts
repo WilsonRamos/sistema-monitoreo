@@ -1,4 +1,5 @@
-import { ITurnoServicio } from 'servicios.ITurnoServicio';
+import { ITurnoServicio } from './iTurnoServicio';
 
-export class TurnoServicio(ITurnoServicio) {
+export class TurnoServicio extends ITurnoServicio {
     // TODO: Implement method
+}

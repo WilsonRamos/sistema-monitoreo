@@ -1,15 +1,23 @@
+import { Operador } from '../modelo/operador';
+
 export class IOperadorRepositorio {
     constructor() {
         // TODO: Implement method
+    }
 
-    public adicionar(Operador operador): void {
+    public adicionar(operador: Operador): void {
         // TODO: Implement method
+    }
 
-    public eliminar(Operador operador): void {
+    public eliminar(operador: Operador): void {
         // TODO: Implement method
+    }
 
-    public modificar(Operador operador): void {
+    public modificar(operador: Operador): void {
         // TODO: Implement method
+    }
 
-    public buscar(int idOperador): void {
+    public buscar(idOperador: any): void {
         // TODO: Implement method
+    }
+}

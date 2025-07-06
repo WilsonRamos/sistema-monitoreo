@@ -1,4 +1,5 @@
-import { IMonitoreoServicio } from 'servicios.IMonitoreoServicio';
+import { IMonitoreoServicio } from './iMonitoreoServicio';
 
-export class MonitoreoServicio(IMonitoreoServicio) {
+export class MonitoreoServicio extends IMonitoreoServicio {
     // TODO: Implement method
+}

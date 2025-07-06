@@ -1,4 +1,5 @@
-import { IOperacionesServicio } from 'servicios.IOperacionesServicio';
+import { IOperacionesServicio } from './iOperacionesServicio';
 
-export class OperacionesServicio(IOperacionesServicio) {
+export class OperacionesServicio extends IOperacionesServicio {
     // TODO: Implement method
+}

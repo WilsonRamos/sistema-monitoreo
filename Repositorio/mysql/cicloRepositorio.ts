@@ -1,4 +1,5 @@
-import { ICicloRepositorio } from 'Dominio.turno.InterfacesRepositorio.ICicloRepositorio';
+import { ICicloRepositorio } from '../../Dominio/turno/InterfacesRepositorio/iCicloRepositorio';
 
-export class CicloRepositorio(ICicloRepositorio) {
+export class CicloRepositorio extends ICicloRepositorio {
     // TODO: Implement method
+}

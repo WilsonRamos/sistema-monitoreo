@@ -1,9 +1,16 @@
+import { Mina } from './modelo/mina';
+import { Frente } from './modelo/frente';
+
 export class MinaFabrica {
     constructor() {
         // TODO: Implement method
+    }
 
-    public crearMina(Mina mina): void {
+    public crearMina(mina: Mina): void {
         // TODO: Implement method
+    }
 
-    public crearFrente(Frente frente): void {
+    public crearFrente(frente: Frente): void {
         // TODO: Implement method
+    }
+}

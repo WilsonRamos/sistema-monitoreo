@@ -1,15 +1,23 @@
+import { Supervisor } from '../modelo/supervisor';
+
 export class ISupervisorRepositorio {
     constructor() {
         // TODO: Implement method
+    }
 
-    public adicionar(Supervisor supervisor ): void {
+    public adicionar(supervisor: Supervisor): void {
         // TODO: Implement method
+    }
 
-    public eliminar(Supervisor supervisor ): void {
+    public eliminar(supervisor: Supervisor): void {
         // TODO: Implement method
+    }
 
-    public modificar(Supervisor supervisor ): void {
+    public modificar(supervisor: Supervisor): void {
         // TODO: Implement method
+    }
 
-    public buscar(int idSupervisor ): void {
+    public buscar(idSupervisor: any): void {
         // TODO: Implement method
+    }
+}
