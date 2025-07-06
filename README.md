@@ -51,6 +51,14 @@ El proyecto sigue los principios de **Domain Driven Design (DDD)**:
 4. Configurar CI/CD
 
 
+## 🔧 instalación de dependencias
+
+- `npm install typescript --save-dev`: Instala TypeScript como dependencia de desarrollo
+- `npm install ts-node --save-dev`: Instala ts-node para ejecutar TypeScript directamente
+- `npm install eslint --save-dev`:  Instala ESLint para la linting de código
+- `npm install @typescript-eslint/parser @typescript-eslint/eslint-plugin --save-dev`: Instala los plugins y el parser de TypeScript para ESLint
+- `npx eslint --init`:  Inicializa la configuración de ESLint
+
 ## 🛠️ Scripts disponibles
 
 - `npm run build`: Compila el proyecto TypeScript
