@@ -1,7 +1,5 @@
 # Sistema de Monitoreo - TypeScript
 
-Este proyecto es la versión TypeScript del Sistema de Monitoreo, convertido desde Python con arquitectura DDD (Domain Driven Design).
-
 ## 📋 Requisitos previos
 
 - Node.js **16+** instalado
@@ -52,12 +50,6 @@ El proyecto sigue los principios de **Domain Driven Design (DDD)**:
 3. Implementar tests unitarios
 4. Configurar CI/CD
 
-## 📝 Notas de Conversión
-
-- Todos los archivos Python han sido convertidos a TypeScript
-- Los tipos han sido inferidos donde fue posible
-- Se mantiene la estructura DDD original
-- Se agregaron TODOs donde se requiere implementación específica
 
 ## 🛠️ Scripts disponibles
 
