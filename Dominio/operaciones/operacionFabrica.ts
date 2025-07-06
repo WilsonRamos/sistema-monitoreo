@@ -1,6 +1,11 @@
+import { Operacion } from './modelo/operacion';
+
 export class OperacionFabrica {
     constructor() {
         // TODO: Implement method
+    }
 
-    public crearOperacion(Operacion operacion): void {
+    public crearOperacion(operacion: Operacion): void {
         // TODO: Implement method
+    }
+}

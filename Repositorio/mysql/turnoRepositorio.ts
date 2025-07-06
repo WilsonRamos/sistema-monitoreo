@@ -1,4 +1,5 @@
-import { ITurnoRepositorio } from 'Dominio.turno.InterfacesRepositorio.ITurnoRepositorio';
+import { ITurnoRepositorio } from '../../Dominio/turno/InterfacesRepositorio/iTurnoRepositorio';
 
-export class TurnoRepositorio(ITurnoRepositorio) {
+export class TurnoRepositorio extends ITurnoRepositorio {
     // TODO: Implement method
+}

@@ -1,4 +1,5 @@
-import { ISupervisorRepositorio } from 'Dominio.usuarios.InteracesRepositorio.ISupervisorRepositorio';
+import { ISupervisorRepositorio } from '../../Dominio/usuarios/InteracesRepositorio/iSupervisorRepositorio';
 
-export class SupervisorRepositorio(ISupervisorRepositorio) {
+export class SupervisorRepositorio extends ISupervisorRepositorio {
     // TODO: Implement method
+}

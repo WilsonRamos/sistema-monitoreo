@@ -1,4 +1,5 @@
-import { IUsuariosServicio } from 'servicios.IUsuariosServicio';
+import { IUsuariosServicio } from './iUsuariosServicio';
 
-export class UsuariosServicio(IUsuariosServicio) {
+export class UsuariosServicio extends IUsuariosServicio {
     // TODO: Implement method
+}

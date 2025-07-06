@@ -1,9 +1,16 @@
+import { Excavadora } from './modelo/excavadora';
+import { Volquete } from './modelo/volquete';
+
 export class MonitoreoFabrica {
     constructor() {
         // TODO: Implement method
+    }
 
-    public crearVolquete(Volquete volquete): void {
+    public crearVolquete(volquete: Volquete): void {
         // TODO: Implement method
+    }
 
-    public crearExcavadora(Excavadora excavadora): void {
+    public crearExcavadora(excavadora: Excavadora): void {
         // TODO: Implement method
+    }
+}

@@ -1,5 +1,4 @@
-import { Enum } from 'enum';
-
-export class zona(Enum) {
-    FrenteMinado = 1
+export enum Zona {
+    FrenteMinado = 1,
     PlantaLavado = 2
+}

@@ -1,4 +1,5 @@
-import { IOperacionRepositorio } from 'Dominio.operaciones.IOperacionRepositorio';
+import { IOperacionRepositorio } from '../../Dominio/operaciones/iOperacionRepositorio';
 
-export class OperacionRepositorio(IOperacionRepositorio) {
+export class OperacionRepositorio extends IOperacionRepositorio {
     // TODO: Implement method
+}

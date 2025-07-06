@@ -1,12 +1,18 @@
-import { Equipo } from 'Dominio.monitoreo.modelo.Equipo';
+import { Equipo } from './equipo';
 
-export class Excavadora(Equipo) {
+export class Excavadora extends Equipo {
+    public tipoExcavacion: any = null;
+    public horasOperacion: any = null;
+
     constructor() {
-        public tipoExcavacion: any = null;
-        public horasOperacion: any = null;
+        super(); // constructor
+    }
 
     public extraer(): void {
         // TODO: Implement method
+    }
 
     public cargarVolquete(): void {
         // TODO: Implement method
+    }
+}

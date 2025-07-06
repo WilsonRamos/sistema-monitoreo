@@ -1,12 +1,18 @@
-import { Persona } from 'Dominio.usuarios.modelo.Persona';
+import { Persona } from './persona';
 
-export class Operador(Persona) {
+export class Operador extends Persona {
+    public licencia: any = null;
+    public equipoAsignado: any = null;
+    
     constructor() {
-        public licencia: any = null;
-        public equipoAsignado: any = null;
+        super(); // constructor
+    }
 
     public operar(): void {
         // TODO: Implement method
+    }
 
     public reportarIncidencia(): void {
         // TODO: Implement method
+    }
+}

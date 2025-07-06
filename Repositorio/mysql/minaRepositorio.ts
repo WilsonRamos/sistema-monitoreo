@@ -1,4 +1,5 @@
-import { IMinaRepositorio } from 'Dominio.mina.InterfacesRepositorio.IMinaRepositorio';
+import { IMinaRepositorio } from '../../Dominio/mina/InterfacesRepositorio/iMinaRepositorio';
 
-export class MinaRepositorio(IMinaRepositorio) {
+export class MinaRepositorio extends IMinaRepositorio {
     // TODO: Implement method
+}

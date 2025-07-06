@@ -1,6 +1,11 @@
 export class Frente {
+    public asignarEquipos: any = null;
+
     constructor() {
-        public asignarEquipos: any = null;
+        // constructor
+    }
 
     public liberarEquipo(): void {
         // TODO: Implement method
+    }
+}

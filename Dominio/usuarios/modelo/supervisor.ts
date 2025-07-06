@@ -1,11 +1,17 @@
-import { Persona } from 'Dominio.usuarios.modelo.Persona';
+import { Persona } from './persona';
 
-export class Supervisor(Persona) {
+export class Supervisor extends Persona {
+    public EquipoAsignado: any = null;
+    
     constructor() {
-        public EquipoAsignado: any = null;
+        super(); // constructor
+    }
 
     public asignarOperacion(): void {
         // TODO: Implement method
+    }
 
     public monitorearEquipos(): void {
         // TODO: Implement method
+    }
+}
