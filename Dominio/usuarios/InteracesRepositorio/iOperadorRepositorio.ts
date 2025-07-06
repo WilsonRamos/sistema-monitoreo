@@ -1,4 +1,4 @@
-import { Operador } from '../modelo/operador';
+    import { Operador } from '../modelo/operador';
 
 export class IOperadorRepositorio {
     constructor() {
