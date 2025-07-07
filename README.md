@@ -362,11 +362,6 @@ class MemoriaEquipoRepositorio implements IEquipoRepositorio {
 }
 ```
 
-### **Repositorio y Enlaces:**
-- **GitHub**: https://github.com/WilsonRamos/sistema-monitoreo
-- **Documentación**: `/docs` en el repositorio
-- **Issues**: GitHub Issues para reportar problemas
-
 ## Convenciones de Codificación Aplicadas
 
 ### Nombres
