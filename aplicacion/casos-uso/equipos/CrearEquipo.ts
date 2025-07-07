@@ -29,14 +29,25 @@ export class CrearEquipo {
      * 
      * @param codigo - Código único del equipo
      * @param tipo - Tipo de equipo (VOLQUETE, EXCAVADORA, etc.)
+     * @param nivelCombustible - Nivel inicial de combustible
+     * @param horasOperacion - Horas iniciales de operación
      * @returns ID del equipo creado
      */
-    async ejecutar(codigo: string, tipo: string): Promise<string> {
+    async ejecutar(
+        codigo: string,
+        tipo: string,
+        nivelCombustible: number,
+        horasOperacion: number
+    ): Promise<string> {
         try {
             console.log(`📝 Iniciando creación de equipo: ${codigo} (${tipo})`);
             
             // 1. Validaciones a nivel de aplicación
             this.validarDatosDeEntrada(codigo, tipo);
+
+            //validar nuevs parametros
+            if (nivelCombustible < 0) throw new Error('El nivel de combustible no puede ser negativo');
+            if (horasOperacion < 0) throw new Error('Las horas de operación no pueden ser negativas');
             
             // 2. Verificar reglas de negocio específicas
             await this.verificarReglasDeNegocio(codigo);
@@ -46,7 +57,7 @@ export class CrearEquipo {
             
             // 4. Crear entidad de dominio
             // Concepto: La entidad valida las reglas de negocio en su constructor
-            const equipo = new Equipo(id, codigo, tipo);
+            const equipo = new Equipo(id, codigo, tipo, nivelCombustible, horasOperacion);
             
             // 5. Persistir usando el repositorio
             // Concepto: Dependency Injection - usamos la interface, no la implementación

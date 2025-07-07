@@ -7,12 +7,20 @@
 
 export class Equipo {
     // Propiedades privadas (encapsulación)
-    private _id: string;
-    private _codigo: string;
-    private _tipo: string;
+    private readonly _id: string;
+    private readonly _codigo: string;
+    private readonly _tipo: string;
     private _estado: string;
+    private _nivelCombustible: number;
+    private _horasOperacion: number;
 
-    constructor(id: string, codigo: string, tipo: string) {
+    constructor(
+        id: string, 
+        codigo: string, 
+        tipo: string,
+        nivelCombustible: number,
+        horasOperacion: number
+    ) {
         // Validación de reglas de negocio en el constructor
         this.validarDatos(codigo, tipo);
         
@@ -20,6 +28,8 @@ export class Equipo {
         this._codigo = codigo;
         this._tipo = tipo;
         this._estado = 'DISPONIBLE'; // Estado inicial por defecto
+        this._nivelCombustible = nivelCombustible;
+        this._horasOperacion = horasOperacion;
     }
 
     // Getters (propiedades de solo lectura desde el exterior)
@@ -38,7 +48,28 @@ export class Equipo {
     get estado(): string { 
         return this._estado; 
     }
+    // Nivel de combustible
+    get nivelCombustible(): number {
+        return this._nivelCombustible;
+    }
 
+    set nivelCombustible(valor: number) {
+        if (valor < 0) {
+            throw new Error('El nivel de combustible no puede ser negativo');
+        }
+        this._nivelCombustible = valor;
+    }
+     // Horas de operación
+    get horasOperacion(): number {
+        return this._horasOperacion;
+    }
+
+    set horasOperacion(valor: number) {
+        if (valor < 0) {
+            throw new Error('Las horas de operación no pueden ser negativas');
+        }
+        this._horasOperacion = valor;
+    }
     // ===================================
     // COMPORTAMIENTOS DE DOMINIO
     // ===================================
