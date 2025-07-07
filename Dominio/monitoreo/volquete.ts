@@ -1,12 +1,18 @@
-import { Equipo } from 'Dominio.monitoreo.modelo.Equipo';
+import { Equipo } from './Equipo';
 
-export class Volquete(Equipo) {
+export class Volquete extends Equipo {
+    public capacidadCarga: any = null;
+    public cargaActual: any = null;
+    
     constructor() {
-        public capacidadCarga: any = null;
-        public cargaActual: any = null;
+        super() // constructor
+    }
 
     public cargar(): void {
         // TODO: Implement method
+    }
 
     public descargar(): void {
         // TODO: Implement method
+    }
+}

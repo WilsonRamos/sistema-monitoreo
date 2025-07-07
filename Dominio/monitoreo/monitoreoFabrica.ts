@@ -1,5 +1,5 @@
-import { Excavadora } from './modelo/excavadora';
-import { Volquete } from './modelo/volquete';
+import { Excavadora } from './excavadora';
+import { Volquete } from './volquete';
 
 export class MonitoreoFabrica {
     constructor() {
