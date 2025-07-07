@@ -27,5 +27,8 @@
     "prisma": "^6.11.1",
     "ts-node": "^10.9.0",
     "typescript": "^5.0.0"
+  },
+  "prisma": {
+    "schema": "infraestructura/persistencia/prisma/schema.prisma"
   }
 }
