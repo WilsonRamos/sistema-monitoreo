@@ -39,5 +39,4 @@ coverage/
 .env.test.local
 .env.production.local
 
-# esto para qué?
 /generated/prisma
