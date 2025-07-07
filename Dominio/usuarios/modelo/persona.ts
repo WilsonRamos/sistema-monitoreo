@@ -1,9 +1,22 @@
 export class Persona {
-    public id: any = null;
-    public nombre: any = null;
-    public apellido: any = null;
+    protected readonly _id: string;
+    protected readonly _nombre: string;
+    protected readonly _apellido: string;
     
-    constructor() {
-        // constructor
+    constructor(
+        id: string,
+        nombre: string, 
+        apellido: string
+    ) {
+        this._id = id;
+        this._nombre = nombre;
+        this._apellido = apellido;
     }
+    get id(): string {
+        return this._id;
+    }
+    get nombre(): string {
+        return this._nombre;
+    }
+
 }

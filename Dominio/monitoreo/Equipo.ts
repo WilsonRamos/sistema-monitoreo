@@ -1,3 +1,5 @@
+import { Operador } from '../usuarios/modelo/operador';
+
 // ===================================
 // ENTIDAD DE DOMINIO - EQUIPO
 // ===================================
@@ -12,14 +14,16 @@ export class Equipo {
     private readonly _tipo: string;
     private _estado: string;
     private _nivelCombustible: number;
-    private _horasOperacion: number;
+    private _horasOperacion: number = 0;
+    private _operadorAsignado: Operador;
 
     constructor(
         id: string, 
         codigo: string, 
         tipo: string,
         nivelCombustible: number,
-        horasOperacion: number
+        horasOperacion: number,
+        operadorAsignado: Operador,
     ) {
         // Validación de reglas de negocio en el constructor
         this.validarDatos(codigo, tipo);
@@ -30,6 +34,7 @@ export class Equipo {
         this._estado = 'DISPONIBLE'; // Estado inicial por defecto
         this._nivelCombustible = nivelCombustible;
         this._horasOperacion = horasOperacion;
+        this._operadorAsignado = operadorAsignado;
     }
 
     // Getters (propiedades de solo lectura desde el exterior)
@@ -69,6 +74,10 @@ export class Equipo {
             throw new Error('Las horas de operación no pueden ser negativas');
         }
         this._horasOperacion = valor;
+    }
+
+    set estado(estado: string) {
+        this._estado = estado;
     }
     // ===================================
     // COMPORTAMIENTOS DE DOMINIO
