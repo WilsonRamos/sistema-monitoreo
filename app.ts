@@ -106,35 +106,13 @@ class SistemaMonitoreoApp {
                 ]
             });
         });
-        
-        console.log('✅ Rutas configuradas');
-        console.log('   📄 GET / -> Página de inicio');
-        console.log('   📡 /api/equipos -> API REST');
-        console.log('   💚 GET /health -> Health check');
+    
     }
 
     iniciar(puerto: number = 3000): void {
         this.app.listen(puerto, () => {
-            console.log('\n🚀 ============================================');
-            console.log('      SISTEMA DE MONITOREO MINERO INICIADO');
-            console.log('🚀 ============================================');
-            console.log(`📱 Página web: http://localhost:${puerto}`);
-            console.log(`🔗 API REST: http://localhost:${puerto}/api/equipos`);
-            console.log(`💚 Health: http://localhost:${puerto}/health`);
-            console.log('==============================================');
-            console.log('📋 Arquitectura implementada:');
-            console.log('   ✅ Clean Architecture (4 capas)');
-            console.log('   ✅ Domain Driven Design (DDD)');
-            console.log('   ✅ Express.js MVC Framework');
-            console.log('   ✅ Dependency Injection');
-            console.log('   ✅ Separation of Concerns');
-            console.log('==============================================');
-            console.log('🎯 Cumple requisitos del laboratorio:');
-            console.log('   ✅ Operaciones CRUD');
-            console.log('   ✅ Página de inicio funcional');
-            console.log('   ✅ API REST endpoints');
-            console.log('   ✅ Naming conventions TypeScript');
-            console.log('==============================================\n');
+            console.log('\n🚀 Iniciando Servidor');
+            
         });
     }
 }
