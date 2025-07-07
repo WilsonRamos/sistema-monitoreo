@@ -13,3 +13,47 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// MONITOREO
+enum EstadoEquipo {
+  OPERATIVO
+  EN_MANTENIMIENTO
+  CARGANDO
+  DESCARGANDO
+  TRANSPORTANDO
+}
+
+model Equipo {
+  id String @id @default(uuid())
+  codigo String @unique
+  tipo String
+  estado EstadoEquipo @default(OPERATIVO)
+  nivelCombustible Float
+  horasOperacion Int
+
+  operadorId String @unique
+  operador Operador @relation(name: "Asignacion", fields: [operadorId], references: [id])
+
+  volquete Volquete?
+  excavadora Excavadora?
+}
+model Volquete {
+  id String @id
+  capacidadCarga Float
+  cargaActual Float
+  equipo Equipo @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+model Excavadora {
+  id String @id
+  tipoExcavacion String
+  equipo Equipo @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+model Operador {
+  id String @id @default(uuid())
+  nombre String
+  apellido String
+  licencia String @unique
+  equipo Equipo? @relation(name: "Asignacion")
+}
