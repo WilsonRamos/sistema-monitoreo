@@ -39,4 +39,4 @@ coverage/
 .env.test.local
 .env.production.local
 
-/generated/prisma
+infraestructura/persistencia/generated/prisma
