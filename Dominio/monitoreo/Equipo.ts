@@ -59,6 +59,10 @@ export class Equipo {
         return this._nivelCombustible;
     }
 
+    get operadorAsignado() : Operador {
+        return this._operadorAsignado;
+    }
+
     set nivelCombustible(valor: number) {
         if (valor < 0) {
             throw new Error('El nivel de combustible no puede ser negativo');
@@ -80,6 +84,11 @@ export class Equipo {
     set estado(estado: EstadoEquipo) {
         this._estado = estado;
     }
+
+    set operadorAsignado(operadorAsignado : Operador) {
+        this._operadorAsignado = operadorAsignado;
+    }
+    
     // ===================================
     // COMPORTAMIENTOS DE DOMINIO
     // ===================================

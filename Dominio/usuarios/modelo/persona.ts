@@ -18,5 +18,8 @@ export class Persona {
     get nombre(): string {
         return this._nombre;
     }
+    get apellido() : string {
+        return this._apellido;
+    }
 
 }
