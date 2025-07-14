@@ -5,7 +5,7 @@ import { Operador } from '../usuarios/modelo/operador';
  * Representa una Excavadora, equipo utilizado para realizar excavaciones.
  */
 export class Excavadora extends Equipo {
-    private tipoExcavacion: string;
+    private readonly tipoExcavacion: string;
 
     constructor(
         id: string,
