@@ -1,4 +1,5 @@
 import { Operador } from '../usuarios/modelo/operador';
+import { EstadoEquipo } from './EstadoEquipo'
 
 // ===================================
 // ENTIDAD DE DOMINIO - EQUIPO
@@ -12,7 +13,7 @@ export class Equipo {
     private readonly _id: string;
     private readonly _codigo: string;
     private readonly _tipo: string;
-    private _estado: string;
+    private _estado: EstadoEquipo;
     private _nivelCombustible: number;
     private _horasOperacion: number = 0;
     private _operadorAsignado: Operador;
@@ -31,7 +32,7 @@ export class Equipo {
         this._id = id;
         this._codigo = codigo;
         this._tipo = tipo;
-        this._estado = 'DISPONIBLE'; // Estado inicial por defecto
+        this._estado = EstadoEquipo.OPERATIVO; // Estado inicial por defecto
         this._nivelCombustible = nivelCombustible;
         this._horasOperacion = horasOperacion;
         this._operadorAsignado = operadorAsignado;
@@ -76,7 +77,7 @@ export class Equipo {
         this._horasOperacion = valor;
     }
 
-    set estado(estado: string) {
+    set estado(estado: EstadoEquipo) {
         this._estado = estado;
     }
     // ===================================
@@ -87,8 +88,8 @@ export class Equipo {
     /**
      * Cambiar el estado del equipo
      * Regla de negocio: Solo ciertos estados son válidos
-     */
-    cambiarEstado(nuevoEstado: string): void {
+    
+    cambiarEstado(nuevoEstado: EstadoEquipo): void {
         const estadosValidos = ['DISPONIBLE', 'OPERANDO', 'MANTENIMIENTO', 'INACTIVO'];
         
         if (!estadosValidos.includes(nuevoEstado)) {
@@ -102,13 +103,14 @@ export class Equipo {
         
         this._estado = nuevoEstado;
     }
+    */
 
     /**
      * Verificar si el equipo puede operar
      * Regla de negocio: Solo equipos disponibles pueden operar
      */
     puedeOperar(): boolean {
-        return this._estado === 'DISPONIBLE';
+        return this._estado === EstadoEquipo.OPERATIVO;
     }
 
     /**
