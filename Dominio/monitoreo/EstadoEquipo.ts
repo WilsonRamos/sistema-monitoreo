@@ -1,7 +1,7 @@
 export enum EstadoEquipo {
-    OPERATIVO = "Operativo",
-    EN_MANTENIMIENTO = "En mantenimiento",
-    CARGANDO = "Cargando",
-    DESCARGANDO = "Descargando",
-    TRANSPORTANDO = "Transportando"
+    OPERATIVO = "OPERATIVO",
+    EN_MANTENIMIENTO = "EN_MANTENIMIENTO",
+    CARGANDO = "CARGANDO",
+    DESCARGANDO = "DESCARGANDO",
+    TRANSPORTANDO = "TRANSPORTANDO"
 }

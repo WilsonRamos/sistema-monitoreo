@@ -51,7 +51,7 @@ export class Equipo {
         return this._tipo; 
     }
     
-    get estado(): string { 
+    get estado(): EstadoEquipo { 
         return this._estado; 
     }
     // Nivel de combustible
