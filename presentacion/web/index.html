@@ -1,86 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Sistema de Monitoreo Minero</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: Arial, sans-serif; 
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            min-height: 100vh;
-        }
-        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; padding: 30px 0; margin-bottom: 30px; }
-        .header h1 { font-size: 2.5rem; margin-bottom: 10px; color: #ffd700; }
-        .header p { font-size: 1.1rem; opacity: 0.9; }
-        .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { 
-            background: #ffffff1a; 
-            border-radius: 10px; 
-            padding: 25px; 
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .card h3 { color: #ffd700; margin-bottom: 15px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input, .form-group select { 
-            width: 100%; 
-            padding: 10px; 
-            border-radius: 5px; 
-            border: 1px solid #ddd;
-            font-size: 14px;
-        }
-        .btn { 
-            background: #ffd700; 
-            color: #1e3c72; 
-            padding: 12px 20px; 
-            border: none; 
-            border-radius: 5px; 
-            font-weight: bold; 
-            cursor: pointer;
-            margin: 5px 0;
-        }
-        .btn:hover { background: #ffed4a; }
-        .equipos-list { 
-            max-height: 300px; 
-            overflow-y: auto; 
-            background: rgba(0, 0, 0, 0.2); 
-            border-radius: 5px; 
-            padding: 15px; 
-            margin-top: 15px;
-        }
-        .equipo-item { 
-            background: rgba(255, 255, 255, 0.1); 
-            padding: 12px; 
-            border-radius: 5px; 
-            margin-bottom: 8px; 
-            border-left: 3px solid #ffd700;
-        }
-        .success { color: #4ade80; }
-        .error { color: #ff6b6b; }
-        .api-info { 
-            background: rgba(255, 255, 255, 0.05); 
-            border-radius: 10px; 
-            padding: 20px; 
-            margin-top: 20px;
-            grid-column: 1 / -1;
-        }
-        .endpoint { 
-            background: rgba(0, 0, 0, 0.3); 
-            padding: 8px 12px; 
-            border-radius: 5px; 
-            margin: 8px 0; 
-            font-family: monospace;
-        }
-        .method { color: #4ade80; font-weight: bold; }
-        @media (max-width: 768px) {
-            .main-content { grid-template-columns: 1fr; }
-            .header h1 { font-size: 2rem; }
-        }
-    </style>
+    <link rel="stylesheet" href="index.css" />
 </head>
 <body>
     <div class="container">
@@ -96,9 +20,9 @@
                 <form id="equipoForm">
                     <div class="form-group">
                         <label for="codigo">Código del Equipo:</label>
-                        <input type="text" id="codigo" placeholder="Ej: VOL-001" required>
+                        <input type="text" id="codigo" placeholder="Ej: VOL-001" required />
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="tipo">Tipo de Equipo:</label>
                         <select id="tipo" required>
@@ -108,7 +32,7 @@
                             <option value="BULLDOZER">Bulldozer</option>
                         </select>
                     </div>
-                    
+
                     <button type="submit" class="btn">✅ Crear Equipo</button>
                 </form>
                 <div id="mensaje"></div>
@@ -122,32 +46,24 @@
                     <p>Cargando equipos...</p>
                 </div>
             </div>
-
-          
         </div>
     </div>
 
-    <!-- JAVASCRIPT PARA FUNCIONALIDAD -->
     <script>
         console.log('🚀 Sistema de Monitoreo Minero - Frontend iniciado');
 
-        // Función para crear equipo
         document.getElementById('equipoForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const codigo = document.getElementById('codigo').value;
             const tipo = document.getElementById('tipo').value;
             const mensaje = document.getElementById('mensaje');
-            
-            // Validación frontend
+
             if (!codigo || !tipo) {
                 mensaje.innerHTML = '<p class="error">❌ Completa todos los campos</p>';
                 return;
             }
 
             try {
-                console.log('📝 Enviando equipo:', {codigo, tipo});
-                
                 const response = await fetch('/api/equipos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -155,12 +71,11 @@
                 });
 
                 const result = await response.json();
-                console.log('✅ Respuesta del servidor:', result);
 
                 if (result.success) {
                     mensaje.innerHTML = `<p class="success">✅ ${result.message}</p>`;
                     document.getElementById('equipoForm').reset();
-                    cargarEquipos(); // Recargar lista
+                    cargarEquipos();
                 } else {
                     mensaje.innerHTML = `<p class="error">❌ ${result.message}</p>`;
                 }
@@ -170,16 +85,10 @@
             }
         });
 
-        // Función para cargar equipos
         async function cargarEquipos() {
             try {
-                console.log('📋 Cargando lista de equipos...');
-                
                 const response = await fetch('/api/equipos');
                 const result = await response.json();
-                
-                console.log('📊 Equipos obtenidos:', result);
-
                 const lista = document.getElementById('equiposList');
 
                 if (result.success && result.data.length > 0) {
@@ -200,9 +109,7 @@
             }
         }
 
-        // Cargar equipos cuando se carga la página
         window.addEventListener('load', () => {
-            console.log('🌐 Página cargada completamente');
             cargarEquipos();
         });
     </script>
