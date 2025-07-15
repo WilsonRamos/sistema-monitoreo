@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Estado de Equipos - Monitoreo</title>
+  <link rel="stylesheet" href="estado-equipos.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📊 Estado Actual de los Equipos</h1>
+      <p class="subheader">Monitoreo en tiempo real, alertas predictivas y salud operativa.</p>
+    </header>
+
+    <section id="estadoEquipos">
+      <p>Cargando información de los equipos...</p>
+    </section>
+
+    <div class="back-link">
+      <a href="index.html">⬅️ Volver al Inicio</a>
+    </div>
+  </div>
+
+  <script>
+    async function cargarEstadoEquipos() {
+      try {
+        const response = await fetch('/api/equipos');
+        const result = await response.json();
+
+        const container = document.getElementById('estadoEquipos');
+
+        if (result.success && result.data.length > 0) {
+          container.innerHTML = result.data.map(equipo => `
+            <div class="equipo-card">
+              <h3>${equipo.codigo} (${equipo.tipo})</h3>
+              <p class="estado">
+                🩺 Estado: 
+                <span class="${equipo.estado.toLowerCase()}">${equipo.estado}</span>
+              </p>
+              <p class="alerta">🔔 Última alerta: ${equipo.ultimaAlerta || "Sin alertas recientes"}</p>
+              <p class="mantenimiento">🛠️ Mantenimiento programado: ${equipo.mantenimiento || "Ninguno"}</p>
+            </div>
+          `).join('');
+        } else {
+          container.innerHTML = '<p>No hay información disponible aún.</p>';
+        }
+      } catch (error) {
+        console.error('❌ Error obteniendo estado de equipos:', error);
+        document.getElementById('estadoEquipos').innerHTML = 
+          '<p class="error">❌ Error cargando datos. Verifica el servidor.</p>';
+      }
+    }
+
+    window.addEventListener('load', cargarEstadoEquipos);
+  </script>
+</body>
+</html>
+

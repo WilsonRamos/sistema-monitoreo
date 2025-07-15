@@ -141,3 +141,17 @@ body {
         font-size: 2rem;
     }
 }
+
+.estado-equipos-card {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: 30px;
+}
+
+.btn-estado {
+    margin-top: 15px;
+    display: inline-block;
+    padding: 14px 24px;
+    font-size: 1rem;
+}
+
