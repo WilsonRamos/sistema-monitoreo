@@ -4,9 +4,11 @@
   "description": "Sistema de monitoreo con Clean Architecture + DDD",
   "main": "app.ts",
   "scripts": {
-    "dev": "ts-node app.ts",
+    "dev": "nodemon --exec ts-node app.ts",
+    "dev:simple": "ts-node app.ts",
     "build": "tsc",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "typescript",
@@ -24,6 +26,7 @@
     "typescript": "^5.0.0",
     "@types/node": "^20.0.0",
     "@types/express": "^4.17.17",
-    "ts-node": "^10.9.0"
+    "ts-node": "^10.9.0",
+    "nodemon": "^3.1.10"
   }
 }

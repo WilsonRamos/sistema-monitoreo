@@ -21,8 +21,8 @@ export class Equipo {
         id: string, 
         codigo: string, 
         tipo: string,
-        nivelCombustible: number,
-        horasOperacion: number
+        nivelCombustible: number = 100,// Valor por defecto
+        horasOperacion: number = 0
     ) {
         // Validación de reglas de negocio en el constructor
         this.validarDatos(codigo, tipo);

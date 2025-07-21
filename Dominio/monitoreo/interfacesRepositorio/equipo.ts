@@ -1,19 +1,32 @@
-export class Equipo {
-    constructor() {
-        public id: any = null;
-        public marca: any = null;
-        public modelo: any = null;
-        public estado: any = null;
-        public operadorAsignado: any = null;
+// Dominio/monitoreo/interfacesRepositorio/equipo.ts
+// OPCIÓN 2: Si debe ser una INTERFACE
 
-    public obtenerInformacion(): void {
-        // TODO: Implement method
+/**
+ * Interface para definir la estructura de un Equipo
+ */
+export interface IEquipo {
+    id: string;
+    codigo: string;
+    tipo: string;
+    estado: string;
+    nivelCombustible: number;
+    horasOperacion: number;
+}
 
-    public cambiarEstado(): void {
-        // TODO: Implement method
+/**
+ * Interface para datos de creación de equipo
+ */
+export interface CrearEquipoData {
+    codigo: string;
+    tipo: string;
+    nivelCombustible?: number;
+    horasOperacion?: number;
+}
 
-    public asignarOperador(): void {
-        // TODO: Implement method
-
-    public actualizarOperacion(): void {
-        // TODO: Implement method
+/**
+ * Interface para filtros de consulta
+ */
+export interface FiltrosEquipo {
+    tipo?: string;
+    estado?: string;
+}

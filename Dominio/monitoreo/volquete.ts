@@ -1,11 +1,13 @@
 import { Equipo } from './Equipo';
 
 export class Volquete extends Equipo {
-    public capacidadCarga: any = null;
-    public cargaActual: any = null;
+    public capacidadCarga: number;
+    public cargaActual: number;
     
-    constructor() {
-        super() // constructor
+    constructor(id: string, codigo: string, capacidadCarga: number = 50) {
+        super(id, codigo, 'VOLQUETE', 100, 0); // constructor padre con todos los parámetros
+        this.capacidadCarga = capacidadCarga;
+        this.cargaActual = 0;
     }
 
     public cargar(): void {

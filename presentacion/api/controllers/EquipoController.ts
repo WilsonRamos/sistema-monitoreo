@@ -42,7 +42,7 @@ export class EquipoController {
             console.log('📝 POST /api/equipos - Crear equipo:', req.body);
             
             // 1. Extraer datos del request body
-            const { codigo, tipo } = req.body;
+            const { codigo, tipo, nivelCombustible, horasOperacion } = req.body;
             
             // 2. Validaciones básicas HTTP
             const erroresValidacion = this.validarDatosCreacion(codigo, tipo);
@@ -54,8 +54,13 @@ export class EquipoController {
                 return;
             }
 
-            // 3. Ejecutar caso de uso
-            const equipoId = await this.crearEquipoUseCase.ejecutar(codigo, tipo);
+            // 3. Ejecutar caso de uso con todos los parámetros requeridos
+            const equipoId = await this.crearEquipoUseCase.ejecutar(
+                codigo, 
+                tipo, 
+                nivelCombustible || 100,  // Valor por defecto si no se proporciona
+                horasOperacion || 0       // Valor por defecto si no se proporciona
+            );
 
             // 4. Respuesta exitosa
             res.status(201).json(this.crearRespuestaExitosa(
@@ -64,7 +69,9 @@ export class EquipoController {
                     id: equipoId,
                     codigo: codigo,
                     tipo: tipo,
-                    estado: 'DISPONIBLE' // Estado inicial por defecto
+                    estado: 'DISPONIBLE', // Estado inicial por defecto
+                    nivelCombustible: nivelCombustible || 100,  // Usar valor por defecto si no se proporciona
+                    horasOperacion: horasOperacion || 0       // Usar valor por defecto si no se proporciona
                 }
             ));
 

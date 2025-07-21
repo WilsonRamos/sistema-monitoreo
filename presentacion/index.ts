@@ -5,7 +5,7 @@ import { MemoriaEquipoRepositorio } from '../infraestructura/persistencia/reposi
 import { CrearEquipo } from '../aplicacion/casos-uso/equipos/CrearEquipo';
 import { ObtenerEquipos } from '../aplicacion/casos-uso/equipos/ObtenerEquipos';
 import { EquipoController } from './api/controllers/EquipoController';
-import { crearRutasEquipos } from './api/equipos.routes';
+import { crearRutasEquipos } from './api/routes/equipos.routes';
 
 class SistemaMonitoreoApp {
     private app: express.Application;
