@@ -13,6 +13,9 @@ export class Equipo {
     private _estado: string;
     private _nivelCombustible: number;
     private _horasOperacion: number;
+    private readonly _fechaCreacion: Date;
+    private _fechaActualizacion: Date;
+    private readonly _historial: { accion: string, valor?: any, fecha: Date }[] = [];
 
     constructor(
         id: string, 
@@ -30,6 +33,9 @@ export class Equipo {
         this._estado = 'DISPONIBLE'; // Estado inicial por defecto
         this._nivelCombustible = nivelCombustible;
         this._horasOperacion = horasOperacion;
+        this._fechaCreacion = new Date();
+        this._fechaActualizacion = new Date();
+        this.registrarHistorial('crear', { nivelCombustible, horasOperacion });
     }
 
     // Getters (propiedades de solo lectura desde el exterior)
@@ -48,6 +54,12 @@ export class Equipo {
     get estado(): string { 
         return this._estado; 
     }
+    get fechaCreacion(): Date {
+        return this._fechaCreacion;
+    }
+    get fechaActualizacion(): Date {
+        return this._fechaActualizacion;
+    }
     // Nivel de combustible
     get nivelCombustible(): number {
         return this._nivelCombustible;
@@ -58,8 +70,11 @@ export class Equipo {
             throw new Error('El nivel de combustible no puede ser negativo');
         }
         this._nivelCombustible = valor;
+        this._fechaActualizacion = new Date();
+        this.registrarHistorial('setNivelCombustible', valor);
     }
-     // Horas de operación
+
+    // Horas de operación
     get horasOperacion(): number {
         return this._horasOperacion;
     }
@@ -69,7 +84,59 @@ export class Equipo {
             throw new Error('Las horas de operación no pueden ser negativas');
         }
         this._horasOperacion = valor;
+        this._fechaActualizacion = new Date();
+        this.registrarHistorial('setHorasOperacion', valor);
     }
+    get historial(): { 
+        accion: string, valor?: any, fecha: Date }[] { return this._historial; 
+    }
+    // medicion del combutible
+    consumirCombustible(cantidad: number): void {
+        if (cantidad < 0) {
+            throw new Error('La cantidad debe ser positiva')
+        }
+        if (this._nivelCombustible - cantidad < 0) {
+            throw new Error('Combustible insuficiente')
+        }
+        this._nivelCombustible -= cantidad;
+    }
+
+    sumarHorasOperacion(horas: number): void {
+        if (horas < 0){ 
+            throw new Error('Las horas deben ser positivas')
+        }
+        this._horasOperacion += horas;
+        this._fechaActualizacion = new Date();
+        this.registrarHistorial('sumarHorasOperacion', horas);
+    }
+
+    //verificar alerta
+    verificarAlertas(
+        onAlerta: (mensaje: string) => void,
+        umbralCombustible: number = 10,
+        umbralHoras: number = 500
+    ): void {
+        if (this._estado === 'INACTIVO') {
+            onAlerta(`ALERTA: El equipo ${this._codigo} está INACTIVO.`);
+            this.registrarHistorial('alerta', 'INACTIVO');
+        }
+        if (this._nivelCombustible < umbralCombustible) {
+            onAlerta(`ALERTA: El equipo ${this._codigo} tiene bajo nivel de combustible.`);
+            this.registrarHistorial('alerta', 'Combustible bajo');
+        }
+
+        if (this._horasOperacion > umbralHoras) {
+            onAlerta(`ALERTA: El equipo ${this._codigo} requiere mantenimiento preventivo por exceso de horas.`);
+            this.registrarHistorial('alerta', 'Mantenimiento preventivo');
+        }
+
+        if (this._estado === 'MANTENIMIENTO') {
+            onAlerta(`ALERTA: El equipo ${this._codigo} está en mantenimiento.`);
+            this.registrarHistorial('alerta', 'MANTENIMIENTO');
+        }
+        
+    }
+
     // ===================================
     // COMPORTAMIENTOS DE DOMINIO
     // ===================================
@@ -92,6 +159,8 @@ export class Equipo {
         }
         
         this._estado = nuevoEstado;
+        this._fechaActualizacion = new Date();
+        this.registrarHistorial('cambiarEstado', nuevoEstado);
     }
 
     /**
@@ -103,6 +172,17 @@ export class Equipo {
     }
 
     /**
+     * Reinicia el equipo a estado inicial.
+     */
+    reiniciar(): void {
+        this._estado = 'DISPONIBLE';
+        this._nivelCombustible = 100;
+        this._horasOperacion = 0;
+        this._fechaActualizacion = new Date();
+        this.registrarHistorial('reiniciar');
+    }
+
+    /**
      * Obtener información completa del equipo
      * Útil para transferir datos a otras capas
      */
@@ -111,7 +191,9 @@ export class Equipo {
             id: this._id,
             codigo: this._codigo,
             tipo: this._tipo,
-            estado: this._estado
+            estado: this._estado,
+            nivelCombustible: this._nivelCombustible,
+            horasOperacion: this._horasOperacion
         };
     }
 
@@ -128,7 +210,6 @@ export class Equipo {
         if (!codigo || codigo.trim().length === 0) {
             throw new Error('El código del equipo es obligatorio');
         }
-
         if (codigo.length < 3) {
             throw new Error('El código debe tener al menos 3 caracteres');
         }
@@ -154,5 +235,8 @@ export class Equipo {
 
         const estadosPermitidos = transicionesPermitidas[this._estado] || [];
         return estadosPermitidos.includes(nuevoEstado);
+    }
+    private registrarHistorial(accion: string, valor?: any) {
+        this._historial.push({ accion, valor, fecha: new Date() });
     }
 }
