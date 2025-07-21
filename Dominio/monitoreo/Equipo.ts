@@ -90,7 +90,7 @@ export class Equipo {
     get historial(): { 
         accion: string, valor?: any, fecha: Date }[] { return this._historial; 
     }
-    
+    // medicion del combutible
     consumirCombustible(cantidad: number): void {
         if (cantidad < 0) {
             throw new Error('La cantidad debe ser positiva')
