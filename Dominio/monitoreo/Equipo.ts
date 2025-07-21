@@ -110,6 +110,19 @@ export class Equipo {
     this.registrarHistorial('sumarHorasOperacion', horas);
     }
 
+    //verificar alerta
+    verificarAlertas(onAlerta: (mensaje: string) => void): void {
+    if (this._estado === 'INACTIVO') {
+        onAlerta(`ALERTA: El equipo ${this._codigo} está INACTIVO.`);
+        this.registrarHistorial('alerta', 'INACTIVO');
+    }
+
+    // nivel de combustible bajo
+    if (this._nivelCombustible < 10) {
+        onAlerta(`ALERTA: El equipo ${this._codigo} tiene bajo nivel de combustible.`);
+        this.registrarHistorial('alerta', 'Combustible bajo');
+    }
+}
 
     // ===================================
     // COMPORTAMIENTOS DE DOMINIO
