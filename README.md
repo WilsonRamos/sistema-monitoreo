@@ -1,10 +1,92 @@
-# 🏭 Sistema de Monitoreo Minero
+# 🏭 Sistema de Monitoreo Minero - Implementación SOLID
 
 **Universidad Nacional de San Agustín de Arequipa**  
 **Ingeniería de Software I**  
 **Fecha:** Julio 2025
 
 ---
+
+## 🏗️ Arquitectura SOLID con React
+
+Este proyecto implementa un sistema de menús siguiendo rigurosamente los principios SOLID:
+
+- **Single Responsibility Principle (SRP)**: Cada clase tiene una única responsabilidad
+- **Open/Closed Principle (OCP)**: Abierto para extensión, cerrado para modificación
+- **Liskov Substitution Principle (LSP)**: Las implementaciones son intercambiables
+- **Interface Segregation Principle (ISP)**: Interfaces específicas y cohesivas
+- **Dependency Inversion Principle (DIP)**: Depende de abstracciones, no implementaciones
+
+Para más detalles, consulta [SOLID_ARCHITECTURE.md](./docs/SOLID_ARCHITECTURE.md)
+
+## 🚀 Instalación y Ejecución
+
+### Prerequisitos
+- Node.js (v16 o superior)
+- npm o yarn
+
+### Instalación
+```bash
+npm install
+```
+
+### Desarrollo
+```bash
+# Ejecutar backend y frontend simultáneamente
+npm run dev
+
+# Ejecutar solo el backend
+npm run dev:backend
+
+# Ejecutar solo el frontend  
+npm run dev:frontend
+```
+
+### Construcción para Producción
+```bash
+# Construir todo
+npm run build
+
+# Construir solo backend
+npm run build:backend
+
+# Construir solo frontend
+npm run build:frontend
+```
+
+### Ejecución en Producción
+```bash
+npm start
+```
+
+## 🎯 Sistema de Menús SOLID
+
+El sistema de menús implementa:
+
+### Componentes Principales
+- **Menu**: Contenedor principal del menú
+- **MenuItem**: Elemento individual del menú
+- **ServiceContainer**: Inyección de dependencias
+
+### Servicios SOLID
+- **NavigationService**: Manejo de navegación (SRP)
+- **PermissionService**: Gestión de permisos (SRP)
+- **MenuStateManager**: Estado del menú (SRP)
+
+### Patrones Implementados
+- **Factory Pattern**: Creación de elementos de menú
+- **Observer Pattern**: Notificación de cambios de estado
+- **Dependency Injection**: Inversión de dependencias
+
+## 📱 Características
+
+- ✅ Menú responsive basado en la imagen proporcionada
+- ✅ Sistema de permisos granular
+- ✅ Navegación fluida con React Router
+- ✅ Estado persistente del menú
+- ✅ Accesibilidad (ARIA)
+- ✅ Arquitectura SOLID completa
+- ✅ TypeScript strict mode
+- ✅ Hot reload para desarrollo
 
 ## 📋 Propósito
 
