@@ -81,14 +81,6 @@ El Sistema de Monitoreo Minero es una plataforma web desarrollada para **gestion
   - ✅ Validación de formularios
 
 
-### **Módulos del Dominio:**
-
-- **📁 monitoreo/**: Gestión de equipos y seguimiento operacional
-  - `Equipo.ts` - Entidad principal con reglas de negocio
-- **📁 repositorios/**: Interfaces de acceso a datos
-  - `IEquipoRepositorio.ts` - Contrato de persistencia
-
-
 
 ### **Tecnologías por Capa:**
 
@@ -370,19 +362,92 @@ class MemoriaEquipoRepositorio implements IEquipoRepositorio {
 }
 ```
 
-### **Naming Conventions (TypeScript):**
+## Convenciones de Codificación Aplicadas
 
-| **Elemento** | **Convención** | **Ejemplo** |
-|--------------|----------------|-------------|
-| **Clases** | PascalCase | `EquipoController` |
-| **Interfaces** | PascalCase + I prefix | `IEquipoRepositorio` |
-| **Métodos** | camelCase | `obtenerTodos()` |
-| **Variables** | camelCase | `equipoRepositorio` |
-| **Archivos** | PascalCase | `CrearEquipo.ts` |
-| **Constantes** | SCREAMING_SNAKE_CASE | `TIPOS_VALIDOS` |
+### Nombres
 
+#### Convención de Clases (PascalCase)
+```typescript
+export class EquipoController { }
+export class CrearEquipo { }
+export class ObtenerEquipos { }
+export class Equipo { }
+```
 
----
+#### Convención de Métodos y Variables (camelCase)
+```typescript
+// Métodos
+async crear(req: Request, res: Response): Promise<void>
+async obtenerTodos(): Promise<EquipoDto[]>
+async ejecutar(): Promise<string>
+
+// Variables
+private readonly equipoRepositorio: IEquipoRepositorio
+const nuevoEstado: string
+const tiposValidos: string[]
+```
+
+#### Propiedades Privadas (underscore prefix)
+```typescript
+private _id: string;
+private _codigo: string;
+private _tipo: string;
+private _estado: string;
+```
+
+#### Interfaces (I prefix)
+```typescript
+export interface IEquipoRepositorio {
+    crear(equipo: Equipo): Promise<void>;
+    obtenerTodos(): Promise<Equipo[]>;
+}
+```
+
+#### Constantes y Enumeraciones (UPPER_CASE)
+```typescript
+const tiposValidos = ['VOLQUETE', 'EXCAVADORA', 'BULLDOZER', 'GRUA', 'PERFORADORA'];
+const estadosValidos = ['DISPONIBLE', 'OPERANDO', 'MANTENIMIENTO', 'INACTIVO'];
+```
+
+### Funciones
+
+#### Responsabilidad Única
+```typescript
+// Cada método tiene una responsabilidad específica
+private validarDatosCreacion(codigo: any, tipo: any): string[]
+private crearRespuestaExitosa(mensaje: string, data?: any): any
+private manejarError(res: Response, error: any): void
+```
+
+#### Operaciones Asíncronas
+```typescript
+// Uso consistente de async/await
+async crear(equipo: Equipo): Promise<void>
+async obtenerTodos(): Promise<Equipo[]>
+async ejecutar(codigo: string, tipo: string): Promise<string>
+```
+
+#### Tipado Explícito
+```typescript
+// Parámetros y retornos tipados
+async buscarPorTipo(tipo: string): Promise<Equipo[]>
+private validarTipo(tipo: string): void
+obtenerInfo(): any
+```
+
+### Comentarios
+
+#### Documentación JSDoc
+```typescript
+/**
+ * Caso de Uso: Crear Nuevo Equipo
+ * 
+ * Responsabilidades:
+ * 1. Coordinar la creación de un equipo
+ * 2. Validar datos de entrada (nivel aplicación)
+ * 3. Delegar validaciones de negocio al dominio
+ */
+```
 
 ### **Repositorio y Enlaces:**
 - **GitHub**: https://github.com/WilsonRamos/sistema-monitoreo
