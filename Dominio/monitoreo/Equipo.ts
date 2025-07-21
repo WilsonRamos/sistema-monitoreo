@@ -102,27 +102,40 @@ export class Equipo {
     }
 
     sumarHorasOperacion(horas: number): void {
-    if (horas < 0){ 
-        throw new Error('Las horas deben ser positivas')
-    }
-    this._horasOperacion += horas;
-    this._fechaActualizacion = new Date();
-    this.registrarHistorial('sumarHorasOperacion', horas);
+        if (horas < 0){ 
+            throw new Error('Las horas deben ser positivas')
+        }
+        this._horasOperacion += horas;
+        this._fechaActualizacion = new Date();
+        this.registrarHistorial('sumarHorasOperacion', horas);
     }
 
     //verificar alerta
-    verificarAlertas(onAlerta: (mensaje: string) => void): void {
-    if (this._estado === 'INACTIVO') {
-        onAlerta(`ALERTA: El equipo ${this._codigo} está INACTIVO.`);
-        this.registrarHistorial('alerta', 'INACTIVO');
-    }
+    verificarAlertas(
+        onAlerta: (mensaje: string) => void,
+        umbralCombustible: number = 10,
+        umbralHoras: number = 500
+    ): void {
+        if (this._estado === 'INACTIVO') {
+            onAlerta(`ALERTA: El equipo ${this._codigo} está INACTIVO.`);
+            this.registrarHistorial('alerta', 'INACTIVO');
+        }
+        if (this._nivelCombustible < umbralCombustible) {
+            onAlerta(`ALERTA: El equipo ${this._codigo} tiene bajo nivel de combustible.`);
+            this.registrarHistorial('alerta', 'Combustible bajo');
+        }
 
-    // nivel de combustible bajo
-    if (this._nivelCombustible < 10) {
-        onAlerta(`ALERTA: El equipo ${this._codigo} tiene bajo nivel de combustible.`);
-        this.registrarHistorial('alerta', 'Combustible bajo');
+        if (this._horasOperacion > umbralHoras) {
+            onAlerta(`ALERTA: El equipo ${this._codigo} requiere mantenimiento preventivo por exceso de horas.`);
+            this.registrarHistorial('alerta', 'Mantenimiento preventivo');
+        }
+
+        if (this._estado === 'MANTENIMIENTO') {
+            onAlerta(`ALERTA: El equipo ${this._codigo} está en mantenimiento.`);
+            this.registrarHistorial('alerta', 'MANTENIMIENTO');
+        }
+        
     }
-}
 
     // ===================================
     // COMPORTAMIENTOS DE DOMINIO
