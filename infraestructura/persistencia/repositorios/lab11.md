@@ -1,14 +1,7 @@
 # Laboratorio 11: Clean Code
 
-**Autor:** Edgar Sarmiento Calisaya  
-**Fecha:** 13 de julio de 2025  
-**Última modificación:** 19 de julio de 2025  
-**Puntos:** 20  
-**Fecha de Entrega:** 8:00
 
----
-
-## 🎯 Objetivo
+## Objetivo
 
 Demostrar la identificación y corrección de bugs, *code smells* y vulnerabilidades en el proyecto final del curso, aplicando prácticas de codificación legible en las siguientes categorías:
 
@@ -22,8 +15,7 @@ Demostrar la identificación y corrección de bugs, *code smells* y vulnerabilid
 
 ---
 
-## 📝 Descripción
-
+## Descripción
 Este laboratorio presenta la implementación de `SupervisorRepositorio.ts`, una clase que implementa la interfaz `ISupervisorRepositorio` para gestionar entidades `Supervisor` en la base de datos utilizando Prisma. Se han seguido las prácticas de **Clean Code**, garantizando un código:
 
 - Legible
@@ -34,9 +26,9 @@ También se mencionan brevemente las implementaciones relacionadas: `PersonaRepo
 
 ---
 
-## ✅ Prácticas de Clean Code Aplicadas
+## Prácticas de Clean Code Aplicadas
 
-### 1. 🏷️ Nombres
+### 1. Nombres
 
 **Práctica:** Usar nombres descriptivos que revelen la intención.  
 **Ejemplo:**
@@ -67,7 +59,7 @@ private toDomainModel(prismaSupervisor: PrismaSupervisor, equipo: Equipo): Super
 
 ---
 
-### 3. 💬 Comentarios
+### 3. Comentarios
 
 **Práctica:** Usar comentarios que expliquen la intención sin redundancia.  
 **Ejemplo:**
@@ -85,7 +77,7 @@ async adicionar(supervisor: Supervisor): Promise<void> {
 
 ---
 
-### 4. 🧱 Estructura de Código Fuente
+### 4. Estructura de Código Fuente
 
 **Práctica:** Organizar el código de forma lógica y consistente.  
 **Ejemplo:**
@@ -102,7 +94,7 @@ export class SupervisorRepositorio implements ISupervisorRepositorio {
 
 ---
 
-### 5. 📦 Objetos / Estructuras de Datos
+### 5. Objetos / Estructuras de Datos
 
 **Práctica:** Usar clases para definir contratos claros de datos.  
 **Ejemplo:**
@@ -120,7 +112,7 @@ await this.prisma.supervisor.create({
 
 ---
 
-### 6. ⚠️ Tratamiento de Errores
+### 6.  Tratamiento de Errores
 
 **Práctica:** Implementar manejo robusto de errores con mensajes específicos.  
 **Ejemplo:**
@@ -140,7 +132,7 @@ try {
 
 ---
 
-### 7. 🧩 Clases
+### 7.  Clases
 
 **Práctica:** Diseñar clases cohesivas con una única responsabilidad.  
 **Ejemplo:**
@@ -161,9 +153,9 @@ export class SupervisorRepositorio implements ISupervisorRepositorio {
 
 ---
 
-## 🔍 Identificación y Corrección
+##  Identificación y Corrección
 
-### 🐞 Bugs Corregidos
+###  Bugs Corregidos
 
 - **Problema:** Posibles referencias nulas a `supervisor.id` o `supervisor.equipoAsignado`.
 - **Corrección:** Verificación previa usando `findUnique`.
@@ -176,7 +168,7 @@ if (!prismaSupervisor || !prismaSupervisor.equipoAsignado) {
 
 ---
 
-### 😷 Code Smells Corregidos
+###  Code Smells Corregidos
 
 - **Problema:** Método `buscar` retornaba `void`.
 - **Corrección:** Retorna `Promise<Supervisor | null>`.
@@ -189,7 +181,7 @@ async buscar(idSupervisor: string): Promise<Supervisor | null> {
 
 ---
 
-### 🔐 Vulnerabilidades Corregidas
+###  Vulnerabilidades Corregidas
 
 - **Problema:** Promesas no manejadas correctamente.
 - **Corrección:** Uso de `try-catch` en todas las operaciones asíncronas.
@@ -204,16 +196,15 @@ try {
 
 ---
 
-## 📊 Reporte SonarLint
-
-- ✅ **Sin problemas "Blocker" o "Critical"**
-- ✅ Nombres claros, funciones pequeñas
-- ✅ Operaciones asíncronas bien gestionadas
-- ✅ Interfaz bien implementada
+##  Reporte SonarLint
+-  **Sin problemas "Blocker" o "Critical"**
+-  Nombres claros, funciones pequeñas
+-  Operaciones asíncronas bien gestionadas
+- Interfaz bien implementada
 
 ---
 
-## 🧩 Contexto del Proyecto
+##  Contexto del Proyecto
 
 - **`PersonaRepositorio.ts`:** CRUD para `Persona`, usa `PersonaCreateInput`.
 - **`OperadorRepositorio.ts`:** CRUD para `Operador`, incluye campo `licencia`.
@@ -222,15 +213,15 @@ Ambos repositorios siguen prácticas similares y también están limpios según 
 
 ---
 
-## ✅ Trello
+##  Trello
 
 | Tarea | Estado | Detalles |
 |-------|--------|----------|
-| Implementar `SupervisorRepositorio.ts` | ✅ Completada | Métodos CRUD implementados, relaciones con `Equipo` manejadas, prácticas de Clean Code aplicadas |
+| Implementar `SupervisorRepositorio.ts` |  Completada | Métodos CRUD implementados, relaciones con `Equipo` manejadas, prácticas de Clean Code aplicadas |
 
 ---
 
-## 🚀 Instrucciones de Uso
+##  Instrucciones de Uso
 
 1. **Repositorio GitHub:** Asegúrate de clonar el repositorio con los archivos `SupervisorRepositorio.ts`, `PersonaRepositorio.ts` y `OperadorRepositorio.ts`.
 2. **Prisma Schema:** Verifica que los modelos `Supervisor`, `Operador` y `Equipo` estén definidos en `schema.prisma`.
@@ -250,7 +241,7 @@ npx prisma db push
 
 ---
 
-## 📌 Observaciones Finales
+##  Observaciones Finales
 
 - No se detectaron problemas de alta severidad con SonarLint.
 - Las prácticas de Clean Code aplicadas mejoran significativamente la legibilidad y mantenibilidad del código.

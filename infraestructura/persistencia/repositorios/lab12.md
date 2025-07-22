@@ -1,26 +1,19 @@
 
 # Laboratorio 12: Principios SOLID
 
-**Autor:** Edgar Sarmiento Calisaya  
-**Fecha:** 19 de julio de 2025  
-**Puntos:** 20  
-**Fecha de Entrega:** 07:30  
-
----
-
-## 🎯 Objetivo
+##  Objetivo
 
 Aplicar principios de orientación a objetos **SOLID** para desarrollar software más **escalable** y **mantenible**.
 
 ---
 
-## 👥 Grupos
+##  Grupos
 
 - Trabajo individual.
 
 ---
 
-## 📚 Pre-requisitos
+##  Pre-requisitos
 
 - Laboratorio 11 completado.
 - Proyecto en repositorio GitHub.
@@ -38,7 +31,7 @@ En la implementación de cada componente/módulo asignado por el líder del equi
 
 ---
 
-## ✅ Principios SOLID Aplicados
+##  Principios SOLID Aplicados
 
 ### 1. **S – Single Responsibility Principle (SRP)**
 
@@ -90,15 +83,15 @@ constructor(prisma: PrismaClient = new PrismaClient()) {
 
 ---
 
-## 🔍 SonarLint
+##  SonarLint
 
-- ✅ No se encontraron errores "Blocker" ni "Critical".
+-  No se encontraron errores "Blocker" ni "Critical".
 - Se corrigieron promesas no manejadas y posibles referencias nulas.
 - Análisis estático aplicado a todos los archivos modificados.
 
 ---
 
-## 📁 Estructura Implementada
+##  Estructura Implementada
 
 ### `SupervisorRepositorio.ts`
 
@@ -114,7 +107,7 @@ constructor(prisma: PrismaClient = new PrismaClient()) {
 
 ---
 
-## 🛠️ Técnicas de Refactorización
+##  Técnicas de Refactorización
 
 - Extracción de métodos para mapeo (`toDomainModel`, `mapToEquipo`)
 - Manejo explícito de errores con `try-catch`
@@ -122,7 +115,7 @@ constructor(prisma: PrismaClient = new PrismaClient()) {
 
 ---
 
-## 📌 Entregables
+##  Entregables
 
 - [x] Código fuente limpio en GitHub
 - [x] Documentación de principios SOLID aplicados
@@ -131,7 +124,7 @@ constructor(prisma: PrismaClient = new PrismaClient()) {
 
 ---
 
-## 🗂️ Repositorio
+##  Repositorio
 
 El código se encuentra en el repositorio asignado al equipo bajo las rutas:
 
@@ -147,7 +140,7 @@ src/
 
 ---
 
-## 📌 Observaciones Finales
+##  Observaciones Finales
 
 - Se aplicaron correctamente los principios SOLID.
 - Código mantenible, limpio y escalable.
