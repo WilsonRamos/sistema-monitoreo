@@ -57,3 +57,24 @@ model Operador {
   licencia String @unique
   equipo Equipo? @relation(name: "Asignacion")
 }
+
+enum Rol {
+  OPERADOR
+  SUPERVISOR
+}
+
+model Equipo {
+  id        String    @id @default(uuid())
+  nombre    String
+  personas  Persona[] @relation("EquipoPersonas")
+}
+
+model Persona {
+  id String    @id @default(uuid())
+  nombre String
+  apellido String
+  rol Rol
+  licencia String?   @unique
+  equipoAsignado Equipo?   @relation("EquipoPersonas", fields: [equipoId], references: [id])
+  equipoId String?
+}
