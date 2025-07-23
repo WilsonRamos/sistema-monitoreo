@@ -16,7 +16,7 @@ export class Equipo {
     private _estado: EstadoEquipo;
     private _nivelCombustible: number;
     private _horasOperacion: number = 0;
-    private _operadorAsignado: Operador;
+    private _operadorAsignado!: Operador; // ! es para definir que el atributo se definira luego
 
     constructor(
         id: string, 
@@ -35,7 +35,6 @@ export class Equipo {
         this._estado = EstadoEquipo.OPERATIVO; // Estado inicial por defecto
         this._nivelCombustible = nivelCombustible;
         this._horasOperacion = horasOperacion;
-        this._operadorAsignado = operadorAsignado;
     }
 
     // Getters (propiedades de solo lectura desde el exterior)
