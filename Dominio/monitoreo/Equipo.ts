@@ -23,8 +23,7 @@ export class Equipo {
         codigo: string, 
         tipo: string,
         nivelCombustible: number,
-        horasOperacion: number,
-        operadorAsignado: Operador,
+        horasOperacion: number
     ) {
         // Validación de reglas de negocio en el constructor
         this.validarDatos(codigo, tipo);
