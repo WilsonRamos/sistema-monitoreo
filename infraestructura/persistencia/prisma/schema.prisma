@@ -36,6 +36,8 @@ model Equipo {
 
   volquete Volquete?
   excavadora Excavadora?
+
+  supervisores Supervisor[] @relation("SupervisoresDeEquipos")
 }
 model Volquete {
   id String @id
@@ -50,31 +52,25 @@ model Excavadora {
   equipo Equipo @relation(fields: [id], references: [id], onDelete: Cascade)
 }
 
-model Operador {
-  id String @id @default(uuid())
+// USUARIOS
+model Persona {
+  id String @id
   nombre String
   apellido String
-  licencia String @unique
+
+  operador Operador?
+  supervisor Supervisor?
+}
+
+model Operador {
+  id String @id
+  licencia String
+  persona Persona @relation(fields: [id], references: [id], onDelete: Cascade)
   equipo Equipo? @relation(name: "Asignacion")
 }
 
-enum Rol {
-  OPERADOR
-  SUPERVISOR
-}
-
-model Equipo {
-  id        String    @id @default(uuid())
-  nombre    String
-  personas  Persona[] @relation("EquipoPersonas")
-}
-
-model Persona {
-  id String    @id @default(uuid())
-  nombre String
-  apellido String
-  rol Rol
-  licencia String?   @unique
-  equipoAsignado Equipo?   @relation("EquipoPersonas", fields: [equipoId], references: [id])
-  equipoId String?
+model Supervisor {
+  id String @id
+  persona Persona @relation(fields: [id], references: [id], onDelete: Cascade)
+  equipo Equipo[] @relation("SupervisoresDeEquipos")
 }
