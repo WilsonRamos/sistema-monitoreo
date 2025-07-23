@@ -1,23 +1,17 @@
-    import { Operador } from '../modelo/operador';
+import { Operador } from '../modelo/operador';
 
-export class IOperadorRepositorio {
-    constructor() {
-        // TODO: Implement method
-    }
+export interface IOperadorRepositorio {
+    crear(operador: Operador): Promise<void>;
+    
+    eliminar(operador: Operador): Promise<void>;
+    
+    actualizar(operador: Operador): Promise<void>;
+    
+    obtenerPorId(id: string): Promise<Operador | null>;
 
-    public adicionar(operador: Operador): void {
-        // TODO: Implement method
-    }
-
-    public eliminar(operador: Operador): void {
-        // TODO: Implement method
-    }
-
-    public modificar(operador: Operador): void {
-        // TODO: Implement method
-    }
-
-    public buscar(idOperador: any): void {
-        // TODO: Implement method
-    }
+    obtenerTodos(): Promise<Operador[]>;
+    
+    buscarPorNombre(nombre: string): Promise<Operador[]>;
+    
+    buscarPorApellido(apellido: string): Promise<Operador[]>;
 }
