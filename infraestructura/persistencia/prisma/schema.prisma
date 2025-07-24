@@ -39,6 +39,7 @@ model Equipo {
 
   supervisores Supervisor[] @relation("SupervisoresDeEquipos")
 }
+
 model Volquete {
   id String @id
   capacidadCarga Float
@@ -72,5 +73,5 @@ model Operador {
 model Supervisor {
   id String @id
   persona Persona @relation(fields: [id], references: [id], onDelete: Cascade)
-  equipo Equipo[] @relation("SupervisoresDeEquipos")
+  equipos Equipo[] @relation("SupervisoresDeEquipos")
 }

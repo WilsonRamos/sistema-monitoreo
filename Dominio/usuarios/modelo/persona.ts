@@ -12,12 +12,15 @@ export class Persona {
         this._nombre = nombre;
         this._apellido = apellido;
     }
+
     get id(): string {
         return this._id;
     }
+
     get nombre(): string {
         return this._nombre;
     }
+    
     get apellido() : string {
         return this._apellido;
     }

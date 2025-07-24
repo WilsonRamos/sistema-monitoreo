@@ -3,7 +3,7 @@ import { Operador } from '../modelo/operador';
 export interface IOperadorRepositorio {
     crear(operador: Operador): Promise<void>;
     
-    eliminar(operador: Operador): Promise<void>;
+    eliminar(id: string): Promise<void>;
     
     actualizar(operador: Operador): Promise<void>;
     
@@ -14,4 +14,6 @@ export interface IOperadorRepositorio {
     buscarPorNombre(nombre: string): Promise<Operador[]>;
     
     buscarPorApellido(apellido: string): Promise<Operador[]>;
+
+    listar(): Promise<Operador[]>;
 }

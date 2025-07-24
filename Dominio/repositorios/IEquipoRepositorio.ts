@@ -13,7 +13,7 @@ import { Equipo } from '../monitoreo/Equipo';
 export interface IEquipoRepositorio {
     
     // ===================================
-    // OPERACIONES CRUD BÁSICAS
+    // OPERACIONES CRUD BÁSaICAS
     // ===================================
     // Concepto: Estas son las operaciones estándar que exige el laboratorio
     

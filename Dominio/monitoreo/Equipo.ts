@@ -16,14 +16,15 @@ export class Equipo {
     private _estado: EstadoEquipo;
     private _nivelCombustible: number;
     private _horasOperacion: number = 0;
-    private _operadorAsignado!: Operador; // ! es para definir que el atributo se definira luego
+    private _operadorAsignado?: Operador; // ! es para definir que el atributo se definira luego
 
     constructor(
         id: string, 
         codigo: string, 
         tipo: string,
         nivelCombustible: number,
-        horasOperacion: number
+        horasOperacion: number,
+        operadorAsignado?: Operador
     ) {
         // Validación de reglas de negocio en el constructor
         this.validarDatos(codigo, tipo);
@@ -34,6 +35,7 @@ export class Equipo {
         this._estado = EstadoEquipo.OPERATIVO; // Estado inicial por defecto
         this._nivelCombustible = nivelCombustible;
         this._horasOperacion = horasOperacion;
+        this._operadorAsignado = operadorAsignado
     }
 
     // Getters (propiedades de solo lectura desde el exterior)
@@ -57,7 +59,7 @@ export class Equipo {
         return this._nivelCombustible;
     }
 
-    get operadorAsignado() : Operador {
+    get operadorAsignado() : Operador | undefined {
         return this._operadorAsignado;
     }
 

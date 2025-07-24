@@ -3,7 +3,7 @@ import { Equipo } from '../../monitoreo/Equipo';
 
 export class Operador extends Persona {
     private _licencia: string;
-    private _equipoAsignado!: Equipo;
+    private _equipoAsignado: Equipo;
     
     constructor(
         id: string,
@@ -11,7 +11,6 @@ export class Operador extends Persona {
         apellido: string,
         licencia: string,
         equipoAsignado: Equipo
-
     ) {
         super(id, nombre, apellido);
         this._licencia = licencia;
