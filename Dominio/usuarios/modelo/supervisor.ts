@@ -2,21 +2,21 @@ import { Persona } from './persona';
 import { Equipo } from '../../monitoreo/Equipo';
 
 export class Supervisor extends Persona {
-    private _equipoAsignado: Equipo;
+    private readonly _equipoAsignados: Equipo[];
     
     constructor(
         id: string,
         nombre: string,
         apellido: string,
-        equipoAsignado: Equipo
+        equipoAsignados: Equipo[]
 
     ) {
         super(id, nombre, apellido);
-        this._equipoAsignado = equipoAsignado;
+        this._equipoAsignados = equipoAsignados;
     }
 
-    get equipoAsignado(): Equipo {
-        return this._equipoAsignado;
+    get equipoAsignados(): Equipo[] {
+        return this._equipoAsignados;
     }
 
     public asignarOperacion(): void {
