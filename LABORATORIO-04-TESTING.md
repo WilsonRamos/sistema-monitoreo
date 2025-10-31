@@ -4,95 +4,6 @@
 **Ingeniería de Software II**
 **UNSA - Arequipa**
 
----
-
-## 📚 ÍNDICE
-
-1. [Conceptos Implementados](#conceptos-implementados)
-2. [Estructura de Pruebas](#estructura-de-pruebas)
-3. [Tecnologías Utilizadas](#tecnologías-utilizadas)
-4. [Tipos de Pruebas Implementadas](#tipos-de-pruebas-implementadas)
-5. [Ejecución de Pruebas](#ejecución-de-pruebas)
-6. [Reportes de Cobertura](#reportes-de-cobertura)
-7. [Automatización con Grunt](#automatización-con-grunt)
-
----
-
-## 🎯 CONCEPTOS IMPLEMENTADOS
-
-### 1. **Pirámide de Testing**
-
-```
-        /\
-       /UI\         ← Pocas pruebas E2E (lentas, caras)
-      /____\
-     /INTEG.\      ← Pruebas de integración (moderadas)
-    /________\
-   / UNITARIAS \   ← Muchas pruebas unitarias (rápidas, baratas)
-  /__________\
-```
-
-### 2. **Framework de Testing: Jest**
-
-Jest es un framework todo-en-uno que incluye:
-
-- **Test Runner**: Ejecuta las pruebas
-- **Assertions**: Verificaciones (expect, toBe, toThrow, etc.)
-- **Mocking**: Simulación de dependencias
-- **Coverage**: Medición de cobertura de código
-
-### 3. **Mocking y Test Doubles**
-
-**Tipos de Dobles de Prueba:**
-
-- **Dummy**: Objetos pasados pero nunca usados
-- **Stub**: Devuelven respuestas predefinidas
-- **Mock**: Verifican que fueron llamados correctamente
-- **Spy**: Registran llamadas pero mantienen comportamiento real
-- **Fake**: Implementaciones funcionales simplificadas
-
-**Ejemplo en el proyecto:**
-
-```typescript
-// Mock del repositorio
-mockRepository = {
-  crear: jest.fn(),
-  obtenerTodos: jest.fn(),
-  obtenerPorId: jest.fn(),
-  actualizar: jest.fn(),
-  eliminar: jest.fn(),
-  buscarPorTipo: jest.fn(),
-  buscarPorEstado: jest.fn(),
-  existeConCodigo: jest.fn(),
-};
-```
-
-### 4. **Patrón AAA (Arrange-Act-Assert)**
-
-```typescript
-test("Debería crear un equipo válido", () => {
-  // Arrange (Preparar): Configurar datos y mocks
-  const equipo = new Equipo("EQ-001", "VOL-001", "VOLQUETE");
-
-  // Act (Actuar): Ejecutar el comportamiento
-  equipo.cambiarEstado("OPERANDO");
-
-  // Assert (Afirmar): Verificar el resultado
-  expect(equipo.estado).toBe("OPERANDO");
-});
-```
-
-### 5. **Code Coverage (Cobertura de Código)**
-
-Métricas implementadas:
-
-- **Line Coverage**: % de líneas ejecutadas
-- **Branch Coverage**: % de ramas (if/else) ejecutadas
-- **Function Coverage**: % de funciones llamadas
-- **Statement Coverage**: % de declaraciones ejecutadas
-
----
-
 ## 📂 ESTRUCTURA DE PRUEBAS
 
 ```
@@ -125,21 +36,6 @@ sistema-monitoreo/
 ├── coverage/                             ← Reportes de cobertura (generados)
 └── LABORATORIO-04-TESTING.md            ← Esta documentación
 ```
-
----
-
-## 🛠️ TECNOLOGÍAS UTILIZADAS
-
-| Tecnología      | Versión | Propósito                           |
-| --------------- | ------- | ----------------------------------- |
-| **Jest**        | ^30.2.0 | Framework de testing                |
-| **ts-jest**     | ^29.4.5 | Preset de Jest para TypeScript      |
-| **@types/jest** | ^30.0.0 | Tipos de TypeScript para Jest       |
-| **TypeScript**  | ^5.0.0  | Lenguaje de programación            |
-| **Grunt**       | ^1.6.1  | Automatización de tareas            |
-| **grunt-shell** | ^4.0.0  | Ejecutar comandos shell desde Grunt |
-
----
 
 ## TIPOS DE PRUEBAS IMPLEMENTADAS
 
@@ -490,4 +386,3 @@ grunt build
 **Ventaja**: Si las pruebas fallan, la construcción se detiene y NO se genera código compilado.
 
 ---
-
