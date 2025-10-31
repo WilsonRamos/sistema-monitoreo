@@ -17,4 +17,11 @@ export class Volquete extends Equipo {
     public descargar(): void {
         // TODO: Implement method
     }
+
+    public transportar(): void {
+        if (this.estado !== 'OPERANDO') {
+            throw new Error('El volquete debe estar operando para transportar');
+        }
+        // Lógica específica de transporte
+    }
 }

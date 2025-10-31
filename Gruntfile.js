@@ -102,6 +102,24 @@ module.exports = function(grunt) {
         options: {
           stdout: true
         }
+      },
+
+      // Ejecutar pruebas unitarias y de integración
+      test: {
+        command: 'npm test',
+        options: {
+          stdout: true,
+          stderr: true
+        }
+      },
+
+      // Ejecutar pruebas con cobertura
+      testCoverage: {
+        command: 'npm run test:coverage',
+        options: {
+          stdout: true,
+          stderr: true
+        }
       }
     },
     
@@ -157,9 +175,10 @@ module.exports = function(grunt) {
   // Tarea de construcción completa
   grunt.registerTask('build', [
     'clean:dist',        // 1. Limpiar directorio
-    'shell:typescript',  // 2. Compilar TypeScript con tsc nativo
-    'copy:web',         // 3. Copiar archivos web
-    'copy:package'      // 4. Preparar package.json
+    'shell:test',        // 2. Ejecutar pruebas
+    'shell:typescript',  // 3. Compilar TypeScript con tsc nativo
+    'copy:web',         // 4. Copiar archivos web
+    'copy:package'      // 5. Preparar package.json
   ]);
   
   // Tarea para construcción y ejecución
@@ -176,10 +195,20 @@ module.exports = function(grunt) {
   
   // Tarea de limpieza completa
   grunt.registerTask('clean:all', [
-    'clean:dist', 
+    'clean:dist',
     'clean:temp'
   ]);
-  
+
+  // Tarea para ejecutar solo pruebas
+  grunt.registerTask('test', [
+    'shell:test'
+  ]);
+
+  // Tarea para ejecutar pruebas con cobertura
+  grunt.registerTask('test:coverage', [
+    'shell:testCoverage'
+  ]);
+
   // Tarea por defecto
   grunt.registerTask('default', ['build']);
   
