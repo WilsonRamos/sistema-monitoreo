@@ -1,18 +1,4 @@
-/**
- * ===============================================
- * PRUEBAS DE INTEGRACIÓN - CASO DE USO CON MOCKS
- * ===============================================
- *
- * Objetivo del Laboratorio 04:
- * - Probar servicios de aplicación que dependen de Repository
- * - Usar MOCKS para simular el repositorio
- * - Verificar que el caso de uso orquesta correctamente
- *
- * Tipo de prueba: INTEGRACIÓN con MOCKING
- * - Se prueba el caso de uso
- * - Se simula (mockea) la dependencia del repositorio
- * - Se verifica la lógica de orquestación
- */
+
 
 import { CrearEquipo } from '../CrearEquipo';
 import { IEquipoRepositorio } from '../../../../Dominio/repositorios/IEquipoRepositorio';
