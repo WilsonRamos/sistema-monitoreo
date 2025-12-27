@@ -1,6 +1,7 @@
 
 import { IEquipoRepositorio } from '../../../Dominio/repositorios/IEquipoRepositorio';
 import { Equipo } from '../../../Dominio/monitoreo/Equipo';
+import { ValidadorTiposYEstados } from '../../../Dominio/monitoreo/constantes/TiposYEstados';
 
 /**
  * Caso de Uso: Obtener Lista de Equipos
@@ -138,10 +139,8 @@ export class ObtenerEquipos {
             throw new Error('El tipo de equipo es obligatorio');
         }
 
-        const tiposValidos = ['VOLQUETE', 'EXCAVADORA', 'BULLDOZER', 'GRUA', 'PERFORADORA'];
-        if (!tiposValidos.includes(tipo.toUpperCase())) {
-            throw new Error(`Tipo de equipo inválido: ${tipo}. Tipos válidos: ${tiposValidos.join(', ')}`);
-        }
+        // Concepto SOLID: OCP - Usar validador centralizado
+        ValidadorTiposYEstados.validarTipoOError(tipo.toUpperCase());
     }
 
     /**
@@ -152,10 +151,8 @@ export class ObtenerEquipos {
             throw new Error('El estado de equipo es obligatorio');
         }
 
-        const estadosValidos = ['DISPONIBLE', 'OPERANDO', 'MANTENIMIENTO', 'INACTIVO'];
-        if (!estadosValidos.includes(estado.toUpperCase())) {
-            throw new Error(`Estado de equipo inválido: ${estado}. Estados válidos: ${estadosValidos.join(', ')}`);
-        }
+        // Concepto SOLID: OCP - Usar validador centralizado
+        ValidadorTiposYEstados.validarEstadoOError(estado.toUpperCase());
     }
 }
 

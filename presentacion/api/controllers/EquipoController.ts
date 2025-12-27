@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import { CrearEquipo } from '../../../aplicacion/casos-uso/equipos/CrearEquipo';
 import { ObtenerEquipos } from '../../../aplicacion/casos-uso/equipos/ObtenerEquipos';
+import { ValidadorTiposYEstados } from '../../../Dominio/monitoreo/constantes/TiposYEstados';
 
 /**
  * Controller REST para gestión de equipos
@@ -192,8 +193,9 @@ export class EquipoController {
         } else if (typeof tipo !== 'string') {
             errores.push('El tipo debe ser texto');
         } else {
-            const tiposValidos = ['VOLQUETE', 'EXCAVADORA', 'BULLDOZER', 'GRUA', 'PERFORADORA'];
-            if (!tiposValidos.includes(tipo.toUpperCase())) {
+            // Concepto SOLID: OCP - Usar validador centralizado
+            if (!ValidadorTiposYEstados.esTipoValido(tipo.toUpperCase())) {
+                const tiposValidos = ValidadorTiposYEstados.obtenerTiposValidos();
                 errores.push(`Tipo inválido. Tipos válidos: ${tiposValidos.join(', ')}`);
             }
         }

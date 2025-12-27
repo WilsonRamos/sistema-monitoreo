@@ -5,6 +5,8 @@
 // Concepto: Entidad = Objeto con identidad + comportamiento + reglas de negocio
 // Buena Práctica: La entidad encapsula las reglas del negocio
 
+import { ValidadorTiposYEstados, EstadoEquipo } from './constantes/TiposYEstados';
+
 export class Equipo {
     // Propiedades privadas (encapsulación)
     private readonly _id: string;
@@ -147,11 +149,8 @@ export class Equipo {
      * Regla de negocio: Solo ciertos estados son válidos
      */
     cambiarEstado(nuevoEstado: string): void {
-        const estadosValidos = ['DISPONIBLE', 'OPERANDO', 'MANTENIMIENTO', 'INACTIVO'];
-        
-        if (!estadosValidos.includes(nuevoEstado)) {
-            throw new Error(`Estado ${nuevoEstado} no es válido. Estados válidos: ${estadosValidos.join(', ')}`);
-        }
+        // Concepto SOLID: OCP - Usar validador centralizado
+        ValidadorTiposYEstados.validarEstadoOError(nuevoEstado);
         
         // Regla adicional: validar transiciones de estado
         if (!this.puedeTransicionarA(nuevoEstado)) {
@@ -215,10 +214,8 @@ export class Equipo {
         }
 
         // Regla: Solo ciertos tipos de equipos son válidos
-        const tiposValidos = ['VOLQUETE', 'EXCAVADORA', 'BULLDOZER', 'GRUA', 'PERFORADORA'];
-        if (!tiposValidos.includes(tipo)) {
-            throw new Error(`Tipo ${tipo} no es válido. Tipos válidos: ${tiposValidos.join(', ')}`);
-        }
+        // Concepto SOLID: OCP - Usar validador centralizado (abierto a extensión, cerrado a modificación)
+        ValidadorTiposYEstados.validarTipoOError(tipo);
     }
 
     /**
@@ -226,11 +223,12 @@ export class Equipo {
      * Concepto: State Machine - Máquina de estados
      */
     private puedeTransicionarA(nuevoEstado: string): boolean {
+        // Concepto SOLID: OCP - Usar enums centralizados
         const transicionesPermitidas: { [key: string]: string[] } = {
-            'DISPONIBLE': ['OPERANDO', 'MANTENIMIENTO', 'INACTIVO'],
-            'OPERANDO': ['DISPONIBLE', 'MANTENIMIENTO'],
-            'MANTENIMIENTO': ['DISPONIBLE', 'INACTIVO'],
-            'INACTIVO': ['DISPONIBLE', 'MANTENIMIENTO']
+            [EstadoEquipo.DISPONIBLE]: [EstadoEquipo.OPERANDO, EstadoEquipo.MANTENIMIENTO, EstadoEquipo.INACTIVO],
+            [EstadoEquipo.OPERANDO]: [EstadoEquipo.DISPONIBLE, EstadoEquipo.MANTENIMIENTO],
+            [EstadoEquipo.MANTENIMIENTO]: [EstadoEquipo.DISPONIBLE, EstadoEquipo.INACTIVO],
+            [EstadoEquipo.INACTIVO]: [EstadoEquipo.DISPONIBLE, EstadoEquipo.MANTENIMIENTO]
         };
 
         const estadosPermitidos = transicionesPermitidas[this._estado] || [];

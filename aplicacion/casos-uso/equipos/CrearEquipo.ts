@@ -1,5 +1,6 @@
 import { IEquipoRepositorio } from '../../../Dominio/repositorios/IEquipoRepositorio';
 import { Equipo } from '../../../Dominio/monitoreo/Equipo';
+import { ValidadorTiposYEstados } from '../../../Dominio/monitoreo/constantes/TiposYEstados';
 
 /**
  * Caso de Uso: Crear Nuevo Equipo
@@ -103,6 +104,9 @@ export class CrearEquipo {
         if (codigo.length > 20) {
             throw new Error('El código no puede tener más de 20 caracteres');
         }
+
+        // Validación de tipo de equipo usando validador centralizado (OCP)
+        ValidadorTiposYEstados.validarTipoOError(tipo);
 
         console.log(`✅ Validaciones de entrada pasadas para: ${codigo}`);
     }
