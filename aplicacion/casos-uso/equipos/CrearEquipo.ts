@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { IEquipoRepositorio } from '../../../Dominio/repositorios/IEquipoRepositorio';
 import { Equipo } from '../../../Dominio/monitoreo/Equipo';
 
@@ -129,20 +130,33 @@ export class CrearEquipo {
 
     /**
      * Generar ID único para el equipo
-     * Concepto: ID Generation Strategy
-     * 
-     * Nota: En un sistema real, esto podría ser:
-     * - UUID con crypto.randomUUID()
-     * - ID generado por base de datos
-     * - ID basado en timestamp + random
+     *
+     * Concepto: ID Generation Strategy - UUID v4 (RFC 4122)
+     *
+     * ¿Por qué UUID v4?
+     * - Criptográficamente seguro (usa crypto.randomUUID())
+     * - 122 bits de entropía (vs 10 bits de Math.random()*1000)
+     * - Prácticamente imposible de colisionar (2^-61 probabilidad por billion de IDs)
+     * - Estándar internacional (RFC 4122)
+     * - No predecible (a diferencia de timestamp + Math.random)
+     *
+     * Formato UUID v4:
+     * xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+     * Ejemplo: f47ac10b-58cc-4372-a567-0e02b2c3d479
+     *
+     * Ventajas sobre timestamp + Math.random():
+     * - Seguridad: No se puede predecir el próximo ID
+     * - Unicidad: Globalmente único sin coordinación central
+     * - Compatibilidad: Ampliamente soportado en APIs, BDs, sistemas
+     *
+     * @returns ID en formato "equipo-[UUID-v4]"
      */
     private generarIdUnico(): string {
-        // Estrategia simple: timestamp + random
-        const timestamp = Date.now();
-        const random = Math.floor(Math.random() * 1000);
-        const id = `equipo-${timestamp}-${random}`;
-        
-        console.log(`🆔 ID generado: ${id}`);
+        // UUID v4 - Cryptographically secure random ID
+        const uuid = randomUUID();
+        const id = `equipo-${uuid}`;
+
+        console.log(`🆔 ID generado (UUID v4): ${id}`);
         return id;
     }
 }

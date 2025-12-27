@@ -4,7 +4,6 @@ import { CrearEquipo } from '../CrearEquipo';
 import { IEquipoRepositorio } from '../../../../Dominio/repositorios/IEquipoRepositorio';
 
 describe('CrearEquipo - Pruebas de Integración con Mocks', () => {
-
     // ===================================
     // MOCKS Y SETUP
     // ===================================
@@ -13,8 +12,6 @@ describe('CrearEquipo - Pruebas de Integración con Mocks', () => {
     let crearEquipoUseCase: CrearEquipo;
 
     beforeEach(() => {
-        // Crear un MOCK del repositorio
-        // Jest crea un objeto con todos los métodos mockeados
         mockRepository = {
             crear: jest.fn(),
             obtenerTodos: jest.fn(),
@@ -296,6 +293,114 @@ describe('CrearEquipo - Pruebas de Integración con Mocks', () => {
             expect(mockRepository.crear).toHaveBeenCalledWith(
                 expect.objectContaining({
                     tipo: tipo
+                })
+            );
+        });
+    });
+
+    // ==========================================
+    // NUEVAS PRUEBAS: UUID v4 SECURITY FIX
+    // ==========================================
+    describe('Seguridad de IDs generados (UUID v4)', () => {
+        it('debe generar IDs únicos en múltiples llamadas', async () => {
+            // Arrange
+            const ids = new Set<string>();
+            const iteraciones = 100;
+
+            // Act - Generar 100 IDs
+            for (let i = 0; i < iteraciones; i++) {
+                const codigo = `EQ-${i.toString().padStart(3, '0')}`;
+                const id = await crearEquipoUseCase.ejecutar(codigo, 'VOLQUETE', 100, 0);
+                ids.add(id);
+
+                // Reset mock para siguiente iteración
+                mockRepository.existeConCodigo.mockResolvedValue(false);
+            }
+
+            // Assert - No debe haber duplicados
+            expect(ids.size).toBe(iteraciones);
+        });
+
+        it('debe generar IDs en formato UUID v4 válido', async () => {
+            // Arrange
+            // Regex para validar UUID v4 según RFC 4122
+            const uuidV4Regex = /^equipo-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+            // Act
+            const id = await crearEquipoUseCase.ejecutar('EQ-UUID-TEST', 'VOLQUETE', 100, 0);
+
+            // Assert
+            expect(id).toMatch(uuidV4Regex);
+        });
+
+        it('debe generar IDs no predecibles', async () => {
+            // Arrange
+            const ids: string[] = [];
+
+            // Act - Generar 10 IDs consecutivos
+            for (let i = 0; i < 10; i++) {
+                const codigo = `EQ-PRED-${i.toString().padStart(3, '0')}`;
+                const id = await crearEquipoUseCase.ejecutar(codigo, 'VOLQUETE', 100, 0);
+                ids.push(id);
+                mockRepository.existeConCodigo.mockResolvedValue(false);
+            }
+
+            // Assert - Los IDs no deben seguir un patrón incremental
+            // Extraer la primera parte del UUID (después de "equipo-")
+            const numericParts = ids.map(id => {
+                const match = id.match(/equipo-([0-9a-f]+)-/);
+                return match ? parseInt(match[1], 16) : 0;
+            });
+
+            // Verificar que no son secuenciales (diferencia no es constante)
+            const diferencias: number[] = [];
+            for (let i = 1; i < numericParts.length; i++) {
+                diferencias.push(numericParts[i] - numericParts[i - 1]);
+            }
+
+            // Las diferencias deben variar (no ser todas iguales)
+            const diferenciaUnica = new Set(diferencias).size;
+            expect(diferenciaUnica).toBeGreaterThan(1);
+        });
+
+        it('debe generar IDs compatibles con estándar RFC 4122', async () => {
+            // Act
+            const id = await crearEquipoUseCase.ejecutar('EQ-RFC-TEST', 'VOLQUETE', 100, 0);
+
+            // Assert
+            const uuidPart = id.replace('equipo-', '');
+            const parts = uuidPart.split('-');
+
+            // RFC 4122 UUID v4 structure: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+            expect(parts).toHaveLength(5);
+            expect(parts[0]).toHaveLength(8);  // time-low
+            expect(parts[1]).toHaveLength(4);  // time-mid
+            expect(parts[2]).toHaveLength(4);  // time-high-and-version
+            expect(parts[3]).toHaveLength(4);  // clock-seq-and-reserved
+            expect(parts[4]).toHaveLength(12); // node
+
+            // Version 4 indicator (4xxx en la 3ra sección)
+            expect(parts[2][0]).toBe('4');
+
+            // Variant indicator (8, 9, a, o b en la 4ta sección)
+            expect(['8', '9', 'a', 'b']).toContain(parts[3][0].toLowerCase());
+        });
+
+        it('debe funcionar correctamente con el flujo completo de creación', async () => {
+            // Arrange
+            const codigo = 'VOL-INTEGRATION-001';
+            const tipo = 'VOLQUETE';
+
+            // Act
+            const id = await crearEquipoUseCase.ejecutar(codigo, tipo, 100, 0);
+
+            // Assert
+            expect(id).toBeDefined();
+            expect(id).toContain('equipo-');
+            expect(mockRepository.crear).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    codigo,
+                    tipo,
                 })
             );
         });
