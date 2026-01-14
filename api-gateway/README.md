@@ -9,43 +9,53 @@ API Gateway implementado con **NGINX** que centraliza el acceso a todos los micr
 ### ✅ Implementadas
 
 1. **Routing Centralizado**
+
    - Punto de entrada único en puerto 80
    - Enrutamiento inteligente a cada microservicio
 
-2. **Rate Limiting**
+2. **Autenticación JWT Centralizada** ⭐ NUEVO
+
+   - Validación de tokens JWT en todas las rutas protegidas
+   - Endpoint interno `/auth/validate`
+   - Usa `auth_request` de NGINX para subrequests
+   - Rutas protegidas: `/api/equipos`, `/api/monitoreo`, `/api/operaciones`, `/api/kpis`, `/api/usuarios`, `/api/mina`, `/api/turnos`
+   - Rutas públicas: `/api/auth/login`, `/api/auth/register`
+
+3. **Rate Limiting**
+
    - Límite general: 10 peticiones/segundo
    - Límite para autenticación: 5 peticiones/segundo
 
-3. **CORS**
+4. **CORS**
+
    - Configuración centralizada
    - Headers automáticos en todas las respuestas
 
-4. **Load Balancing**
+5. **Load Balancing**
+
    - Preparado para múltiples instancias
    - Keepalive connections
 
-5. **Health Checks**
+6. **Health Checks**
+
    - `/health` - Gateway status
    - `/health/backend` - Backend status
    - `/health/monitoreo` - Monitoreo status
    - `/health/operaciones` - Operaciones status
 
-6. **Logging**
+7. **Logging**
    - Access logs
    - Error logs
    - Formato estándar
 
-### ⏳ Pendientes (Fase 2)
+### ⏳ Pendientes (Fase 3)
 
-1. **Autenticación JWT**
-   - Validación centralizada de tokens
-   - Endpoint `/auth/validate`
+1. **SSL/TLS**
 
-2. **SSL/TLS**
    - Certificados HTTPS
    - HTTP/2
 
-3. **Caché**
+2. **Caché**
    - Caché de respuestas GET
    - Invalidación inteligente
 
@@ -72,17 +82,17 @@ Frontend  Backend  Monitoreo  Operaciones
 
 ## Routing Map
 
-| URL del Cliente | Microservicio Destino | Puerto Interno |
-|----------------|----------------------|----------------|
-| `GET /` | Frontend | 3000 |
-| `POST /api/auth/login` | Backend Legacy | 4000 |
-| `GET /api/equipos` | Servicio Monitoreo | 5000 |
-| `GET /api/monitoreo/*` | Servicio Monitoreo | 5000 |
-| `GET /api/operaciones` | Servicio Operaciones | 6000 |
-| `GET /api/kpis` | Servicio Operaciones | 6000 |
-| `GET /api/usuarios` | Backend Legacy | 4000 |
-| `GET /api/mina` | Backend Legacy | 4000 |
-| `GET /api/turnos` | Backend Legacy | 4000 |
+| URL del Cliente        | Microservicio Destino | Puerto Interno |
+| ---------------------- | --------------------- | -------------- |
+| `GET /`                | Frontend              | 3000           |
+| `POST /api/auth/login` | Backend Legacy        | 4000           |
+| `GET /api/equipos`     | Servicio Monitoreo    | 5000           |
+| `GET /api/monitoreo/*` | Servicio Monitoreo    | 5000           |
+| `GET /api/operaciones` | Servicio Operaciones  | 6000           |
+| `GET /api/kpis`        | Servicio Operaciones  | 6000           |
+| `GET /api/usuarios`    | Backend Legacy        | 4000           |
+| `GET /api/mina`        | Backend Legacy        | 4000           |
+| `GET /api/turnos`      | Backend Legacy        | 4000           |
 
 ## Uso
 
@@ -97,15 +107,35 @@ docker-compose up --build
 ### Acceso
 
 **Antes** (sin API Gateway):
+
 ```bash
 curl http://localhost:5000/api/equipos  # Acceso directo
 curl http://localhost:6000/api/operaciones
 ```
 
-**Ahora** (con API Gateway):
+**Ahora** (con API Gateway + JWT):
+
 ```bash
-curl http://localhost/api/equipos  # Todo por puerto 80
-curl http://localhost/api/operaciones
+# 1. Login para obtener token
+curl -X POST http://localhost/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+
+# Respuesta: { "success": true, "token": "eyJhbGciOiJIUzI1NiIs..." }
+
+# 2. Usar token en peticiones protegidas
+curl http://localhost/api/equipos \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+
+curl http://localhost/api/operaciones \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+**Sin token válido:**
+
+```bash
+curl http://localhost/api/equipos
+# Respuesta: 401 Unauthorized
 ```
 
 ### Health Checks
@@ -131,6 +161,7 @@ Autenticación: 5 req/s + burst de 3
 ```
 
 Si excedes el límite, recibirás:
+
 ```json
 {
   "error": "Demasiadas peticiones, intenta más tarde"
@@ -146,6 +177,7 @@ HTTP Status: 429 (Too Many Requests)
 Ubicación: `api-gateway/nginx/nginx.conf`
 
 **Upstreams** (definición de servicios):
+
 ```nginx
 upstream servicio_monitoreo {
     server servicio-monitoreo:5000;
@@ -154,6 +186,7 @@ upstream servicio_monitoreo {
 ```
 
 **Locations** (routing):
+
 ```nginx
 location /api/equipos {
     limit_req zone=api_limit burst=20 nodelay;
@@ -165,6 +198,7 @@ location /api/equipos {
 ### Agregar Nuevo Endpoint
 
 1. Definir upstream (si es nuevo servicio):
+
 ```nginx
 upstream mi_nuevo_servicio {
     server mi-servicio:7000;
@@ -172,6 +206,7 @@ upstream mi_nuevo_servicio {
 ```
 
 2. Agregar location:
+
 ```nginx
 location /api/mi-endpoint {
     limit_req zone=api_limit burst=20 nodelay;
@@ -183,6 +218,7 @@ location /api/mi-endpoint {
 ```
 
 3. Reconstruir contenedor:
+
 ```bash
 docker-compose up --build api-gateway
 ```
@@ -219,6 +255,7 @@ curl http://localhost/nginx_status
 ```
 
 Respuesta:
+
 ```
 Active connections: 5
 server accepts handled requests
@@ -263,6 +300,7 @@ docker-compose restart api-gateway
 Significa que NGINX no puede conectar con el microservicio backend.
 
 **Solución**:
+
 1. Verificar que el microservicio está corriendo
 2. Verificar health check del servicio
 3. Revisar configuración de upstream
@@ -276,6 +314,7 @@ curl http://localhost/health/monitoreo
 Has excedido el rate limit.
 
 **Solución**:
+
 - Esperar unos segundos
 - Implementar retry con backoff
 - Ajustar límites en nginx.conf si es legítimo
