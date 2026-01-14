@@ -179,7 +179,9 @@ export class MemoriaOperacionRepositorio implements IOperacionRepositorio {
         this.operaciones = operacionesPrueba;
 
         console.log(`✅ ${this.operaciones.length} operaciones de prueba inicializadas`);
-        console.log(`   - ${this.obtenerActivas().length} operaciones activas`);
-        console.log(`   - ${this.operaciones.length - this.obtenerActivas().length} operaciones finalizadas`);
+        // Calcular activas síncronamente
+        const activas = this.operaciones.filter(op => op.estaActiva());
+        console.log(`   - ${activas.length} operaciones activas`);
+        console.log(`   - ${this.operaciones.length - activas.length} operaciones finalizadas`);
     }
 }

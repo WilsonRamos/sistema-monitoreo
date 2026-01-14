@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema de Monitoreo Minero</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <!-- Navegación Superior -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="brand-logo">SM</div>
+                <div class="brand-text">
+                    <h1>Sistema de Monitoreo Minero</h1>
+                    <span>Arquitectura de Microservicios</span>
+                </div>
+            </div>
+            <div class="nav-user">
+                <div class="user-info">
+                    <span class="user-name" id="userName">Cargando...</span>
+                    <span class="user-role" id="userRole"></span>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenedor Principal -->
+    <div class="main-container">
+        <!-- Sidebar de Navegación -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="equipos">
+                    <span class="nav-icon">▪</span>
+                    <span>Equipos</span>
+                </a>
+                <a href="#" class="nav-item" data-section="operaciones">
+                    <span class="nav-icon">▪</span>
+                    <span>Operaciones</span>
+                </a>
+                <a href="#" class="nav-item" data-section="kpis">
+                    <span class="nav-icon">▪</span>
+                    <span>KPIs</span>
+                </a>
+                <a href="#" class="nav-item" data-section="monitoreo">
+                    <span class="nav-icon">▪</span>
+                    <span>Monitoreo</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Área de Contenido -->
+        <main class="content">
+            <!-- Sección: Equipos -->
+            <section id="section-equipos" class="content-section active">
+                <div class="section-header">
+                    <h2>Gestión de Equipos</h2>
+                    <p>Servicio: Monitoreo</p>
+                </div>
+
+                <div class="grid-2">
+                    <!-- Formulario Crear Equipo -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Registrar Nuevo Equipo</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="equipoForm">
+                                <div class="form-group">
+                                    <label for="codigo">Código</label>
+                                    <input type="text" id="codigo" placeholder="VOL-001" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tipo">Tipo</label>
+                                    <select id="tipo" required>
+                                        <option value="">Seleccionar tipo</option>
+                                        <option value="VOLQUETE">Volquete</option>
+                                        <option value="EXCAVADORA">Excavadora</option>
+                                        <option value="BULLDOZER">Bulldozer</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Crear Equipo</button>
+                            </form>
+                            <div id="mensaje" class="message"></div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Equipos -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Equipos Registrados</h3>
+                            <button onclick="cargarEquipos()" class="btn btn-secondary">Actualizar</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="equiposList" class="list-container">
+                                <p class="loading-text">Cargando equipos...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección: Operaciones -->
+            <section id="section-operaciones" class="content-section">
+                <div class="section-header">
+                    <h2>Gestión de Operaciones</h2>
+                    <p>Servicio: Operaciones</p>
+                </div>
+
+                <div class="grid-2">
+                    <!-- Formulario Crear Operación -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Iniciar Nueva Operación</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="operacionForm">
+                                <div class="form-group">
+                                    <label for="tipoOperacion">Tipo de Operación</label>
+                                    <select id="tipoOperacion" required>
+                                        <option value="">Seleccionar tipo</option>
+                                        <option value="CARGUE">Cargue</option>
+                                        <option value="TRANSPORTE">Transporte</option>
+                                        <option value="DESCARGA">Descarga</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="supervisorId">ID Supervisor</label>
+                                    <input type="text" id="supervisorId" placeholder="SUP-001" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="frenteId">ID Frente</label>
+                                    <input type="text" id="frenteId" placeholder="FRT-001" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Iniciar Operación</button>
+                            </form>
+                            <div id="mensajeOperacion" class="message"></div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Operaciones -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Operaciones Activas</h3>
+                            <button onclick="cargarOperaciones()" class="btn btn-secondary">Actualizar</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="operacionesList" class="list-container">
+                                <p class="loading-text">Cargando operaciones...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección: KPIs -->
+            <section id="section-kpis" class="content-section">
+                <div class="section-header">
+                    <h2>Indicadores de Desempeño</h2>
+                    <p>Servicio: Operaciones</p>
+                </div>
+
+                <div class="grid-3">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalOperaciones">--</div>
+                        <div class="stat-label">Total Operaciones</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="operacionesActivas">--</div>
+                        <div class="stat-label">Operaciones Activas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="duracionPromedio">-- min</div>
+                        <div class="stat-label">Duración Promedio</div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3>Detalle de KPIs</h3>
+                        <button onclick="cargarKPIs()" class="btn btn-secondary">Actualizar</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="kpisDetail" class="kpis-container">
+                            <p class="loading-text">Cargando indicadores...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección: Monitoreo -->
+            <section id="section-monitoreo" class="content-section">
+                <div class="section-header">
+                    <h2>Monitoreo de Alertas</h2>
+                    <p>Servicio: Monitoreo</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Alertas de Equipos</h3>
+                        <button onclick="cargarAlertas()" class="btn btn-secondary">Actualizar</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="alertasList" class="list-container">
+                            <p class="loading-text">Cargando alertas...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/config.js"></script>
+    <script src="/js/auth.service.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

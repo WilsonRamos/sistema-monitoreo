@@ -3,7 +3,7 @@
 # ==================================
 #
 # Este archivo orquesta la ejecución de CINCO servicios:
-# - API Gateway (puerto 80) - NUEVO ⭐
+# - API Gateway (puerto 80) - NUEVO 
 # - Frontend Microservice (puerto 3000)
 # - Backend Microservice (puerto 4000) - Monolito Legacy
 # - Servicio Monitoreo (puerto 5000)
@@ -15,7 +15,7 @@ version: '3.8'
 
 services:
   # ==================================
-  # API Gateway (NGINX) - NUEVO ⭐
+  # API Gateway (NGINX) - NUEVO 
   # ==================================
   api-gateway:
     build:

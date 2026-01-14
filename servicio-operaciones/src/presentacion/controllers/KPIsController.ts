@@ -20,7 +20,7 @@ export class KPIsController {
      * GET /api/kpis
      * Obtener KPIs de operaciones
      */
-    async obtenerKPIs(req: Request, res: Response): Promise<void> {
+    async obtenerKPIs(_req: Request, res: Response): Promise<void> {
         try {
             const resultado = await this.obtenerKPIsOperaciones.ejecutar();
 

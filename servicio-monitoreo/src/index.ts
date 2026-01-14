@@ -43,7 +43,7 @@ class ServicioMonitoreo {
         this.app.use(express.urlencoded({ extended: true }));
 
         // Logger simple
-        this.app.use((req, res, next) => {
+        this.app.use((req, _res, next) => {
             console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
             next();
         });
@@ -51,7 +51,7 @@ class ServicioMonitoreo {
 
     private configurarRutas(): void {
         // Ruta raíz - Información del servicio
-        this.app.get('/', (req: Request, res: Response) => {
+        this.app.get('/', (_req: Request, res: Response) => {
             res.json({
                 service: 'Servicio de Monitoreo de Equipos Mineros',
                 version: '1.0.0',
@@ -66,7 +66,7 @@ class ServicioMonitoreo {
         });
 
         // Health check
-        this.app.get('/health', (req: Request, res: Response) => {
+        this.app.get('/health', (_req: Request, res: Response) => {
             res.status(200).json({
                 status: 'healthy',
                 timestamp: new Date().toISOString(),
@@ -88,7 +88,7 @@ class ServicioMonitoreo {
         });
 
         // Manejador de errores global
-        this.app.use((err: Error, req: Request, res: Response, next: any) => {
+        this.app.use((err: Error, _req: Request, res: Response, _next: any) => {
             console.error('❌ Error no manejado:', err);
             res.status(500).json({
                 success: false,

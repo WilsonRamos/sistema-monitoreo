@@ -23,7 +23,7 @@ export class MonitoreoController {
      * GET /api/monitoreo/alertas
      * Obtener alertas de todos los equipos
      */
-    async obtenerAlertas(req: Request, res: Response): Promise<void> {
+    async obtenerAlertas(_req: Request, res: Response): Promise<void> {
         try {
             const resultado = await this.obtenerAlertasEquipos.ejecutar();
 
