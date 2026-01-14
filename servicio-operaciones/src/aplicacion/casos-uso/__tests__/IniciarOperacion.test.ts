@@ -30,6 +30,14 @@ class MockOperacionRepositorio implements IOperacionRepositorio {
         return Array.from(this.operaciones.values()).filter(op => op.estaActiva());
     }
 
+    async obtenerPorSupervisor(supervisorId: string): Promise<Operacion[]> {
+        return Array.from(this.operaciones.values()).filter(op => op.supervisorId === supervisorId);
+    }
+
+    async obtenerPorFrente(frenteId: string): Promise<Operacion[]> {
+        return Array.from(this.operaciones.values()).filter(op => op.frenteId === frenteId);
+    }
+
     async actualizar(operacion: Operacion): Promise<void> {
         this.operaciones.set(operacion.id, operacion);
     }
@@ -260,11 +268,9 @@ describe('IniciarOperacion - Use Case Tests', () => {
     describe('Manejo de Errores', () => {
 
         it('debe retornar error si el repositorio falla', async () => {
-            const repositorioConError: IOperacionRepositorio = {
-                ...mockRepositorio,
-                crear: async () => {
-                    throw new Error('Error de base de datos');
-                }
+            const repositorioConError = new MockOperacionRepositorio();
+            repositorioConError.crear = async () => {
+                throw new Error('Error de base de datos');
             };
 
             const useCaseConError = new IniciarOperacion(repositorioConError);
