@@ -14,8 +14,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Instalar TODAS las dependencias (incluyendo devDependencies para compilar)
-RUN npm ci && \
+# Instalar dependencias (usar npm install ya que no hay package-lock.json)
+RUN npm install && \
     npm cache clean --force
 
 # Copiar código fuente
@@ -34,7 +34,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instalar SOLO dependencias de producción en runtime
-RUN npm ci --omit=dev && \
+RUN npm install --omit=dev && \
     npm cache clean --force
 
 # Copiar archivos compilados desde el builder

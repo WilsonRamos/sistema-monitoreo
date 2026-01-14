@@ -30,8 +30,6 @@ COPY Gruntfile.js ./
 
 # Copiar código fuente (Clean Architecture intacta)
 COPY aplicacion/ ./aplicacion/
-COPY Dominio/ ./Dominio/
-COPY infraestructura/ ./infraestructura/
 COPY presentacion/ ./presentacion/
 COPY app.ts ./
 
