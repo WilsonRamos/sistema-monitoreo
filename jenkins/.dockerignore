@@ -1,0 +1,5 @@
+# No incluir archivos innecesarios en el contexto de build
+*.md
+*.log
+.git
+.gitignore
