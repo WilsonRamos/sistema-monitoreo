@@ -7,27 +7,15 @@
 
 pipeline {
     agent any
-    
+
     // Variables de entorno
     environment {
         // AWS ECR Configuration
         AWS_REGION = 'us-east-1'
-        AWS_ACCOUNT_ID = credentials('aws-account-id')
-        ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-        
-        // Credenciales AWS
-        AWS_CREDENTIALS = credentials('aws-ecr-credentials')
-        
-        // Información del build
-        GIT_COMMIT_SHORT = sh(
-            script: "git rev-parse --short HEAD",
-            returnStdout: true
-        ).trim()
-        BUILD_TAG = "${env.BRANCH_NAME}-${GIT_COMMIT_SHORT}-${env.BUILD_NUMBER}"
-        
+
         // Thresholds de calidad
         COVERAGE_THRESHOLD = '70'
-        
+
         // Servicios a construir
         SERVICES = 'backend,servicio-monitoreo,servicio-operaciones,frontend,api-gateway'
     }
@@ -64,12 +52,23 @@ pipeline {
                     echo "===================="
                     echo "Clonando repositorio"
                     echo "Branch: ${env.BRANCH_NAME}"
-                    echo "Commit: ${GIT_COMMIT_SHORT}"
                     echo "===================="
                 }
-                
+
                 checkout scm
-                
+
+                script {
+                    // Definir variables después del checkout
+                    env.GIT_COMMIT_SHORT = sh(
+                        script: "git rev-parse --short HEAD",
+                        returnStdout: true
+                    ).trim()
+                    env.BUILD_TAG = "${env.BRANCH_NAME}-${env.GIT_COMMIT_SHORT}-${env.BUILD_NUMBER}"
+
+                    echo "Commit: ${env.GIT_COMMIT_SHORT}"
+                    echo "Build Tag: ${env.BUILD_TAG}"
+                }
+
                 // Mostrar información del commit
                 sh '''
                     echo "Último commit:"
@@ -352,48 +351,51 @@ pipeline {
                     expression { env.CHANGE_TARGET == 'main' && env.CHANGE_ID != null }
                 }
             }
-            
+
             steps {
                 script {
-                    echo "===================="
-                    echo "Autenticando con AWS ECR"
-                    echo "Región: ${AWS_REGION}"
-                    echo "Registro: ${ECR_REGISTRY}"
-                    echo "===================="
-                    
                     withCredentials([
+                        string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID'),
                         usernamePassword(
                             credentialsId: 'aws-ecr-credentials',
                             usernameVariable: 'AWS_ACCESS_KEY_ID',
                             passwordVariable: 'AWS_SECRET_ACCESS_KEY'
                         )
                     ]) {
+                        env.ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+                        echo "===================="
+                        echo "Autenticando con AWS ECR"
+                        echo "Región: ${AWS_REGION}"
+                        echo "Registro: ${env.ECR_REGISTRY}"
+                        echo "===================="
+
                         sh '''
                             # Login a ECR
                             aws ecr get-login-password --region ${AWS_REGION} | \
                             docker login --username AWS --password-stdin ${ECR_REGISTRY}
-                            
+
                             echo "✓ Autenticación exitosa con ECR"
                         '''
-                        
+
                         // Push de cada servicio
                         def services = ['backend', 'servicio-monitoreo', 'servicio-operaciones', 'frontend', 'api-gateway']
-                        
+
                         services.each { service ->
                             echo "Pusheando ${service} a ECR..."
-                            
+
                             sh """
                                 # Crear repositorio si no existe
                                 aws ecr describe-repositories --repository-names ${service} --region ${AWS_REGION} || \
                                 aws ecr create-repository --repository-name ${service} --region ${AWS_REGION}
-                                
+
                                 # Tag y push
                                 docker tag ${service}:${BUILD_TAG} ${ECR_REGISTRY}/${service}:${BUILD_TAG}
                                 docker tag ${service}:${BUILD_TAG} ${ECR_REGISTRY}/${service}:latest
-                                
+
                                 docker push ${ECR_REGISTRY}/${service}:${BUILD_TAG}
                                 docker push ${ECR_REGISTRY}/${service}:latest
-                                
+
                                 echo "✓ ${service} pushed successfully"
                             """
                         }
@@ -433,45 +435,56 @@ pipeline {
     post {
         success {
             script {
+                def commitInfo = env.GIT_COMMIT_SHORT ?: 'N/A'
+                def tagInfo = env.BUILD_TAG ?: 'N/A'
+
                 echo """
                 ========================================
                 ✓ PIPELINE EXITOSO
                 ========================================
-                Branch: ${env.BRANCH_NAME}
-                Commit: ${GIT_COMMIT_SHORT}
+                Branch: ${env.BRANCH_NAME ?: 'N/A'}
+                Commit: ${commitInfo}
                 Build: ${env.BUILD_NUMBER}
-                Tag: ${BUILD_TAG}
+                Tag: ${tagInfo}
                 ========================================
                 """
-                
+
                 // Notificación a Slack/Email si está configurado
                 // slackSend(channel: '#deployments', message: "Pipeline exitoso: ${env.JOB_NAME} - ${env.BUILD_NUMBER}")
             }
         }
-        
+
         failure {
             script {
+                def commitInfo = env.GIT_COMMIT_SHORT ?: 'N/A'
+
                 echo """
                 ========================================
                 ❌ PIPELINE FALLIDO
                 ========================================
-                Branch: ${env.BRANCH_NAME}
-                Commit: ${GIT_COMMIT_SHORT}
+                Branch: ${env.BRANCH_NAME ?: 'N/A'}
+                Commit: ${commitInfo}
                 Build: ${env.BUILD_NUMBER}
                 ========================================
                 """
-                
+
                 // Notificación a Slack/Email si está configurado
                 // slackSend(channel: '#deployments', color: 'danger', message: "Pipeline falló: ${env.JOB_NAME} - ${env.BUILD_NUMBER}")
             }
         }
-        
+
         always {
-            // Limpiar workspace
-            cleanWs(
-                deleteDirs: true,
-                patterns: [[pattern: 'node_modules', type: 'INCLUDE']]
-            )
+            script {
+                // Limpiar workspace solo si existe el contexto de workspace
+                try {
+                    cleanWs(
+                        deleteDirs: true,
+                        patterns: [[pattern: 'node_modules', type: 'INCLUDE']]
+                    )
+                } catch (Exception e) {
+                    echo "No se pudo limpiar workspace: ${e.message}"
+                }
+            }
         }
     }
 }
