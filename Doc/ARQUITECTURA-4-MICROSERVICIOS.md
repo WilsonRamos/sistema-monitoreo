@@ -131,17 +131,17 @@ El Sistema de Monitoreo Minero ha evolucionado de una arquitectura de **2 micros
    │  ┌─────────────┐  │ │ ┌──────────┐ │ │ ┌──────────┐ │
    │  │ CONTEXTOS:  │  │ │ │CONTEXTO: │ │ │ │CONTEXTO: │ │
    │  │             │  │ │ │          │ │ │ │          │ │
-   │  │ - Usuarios  │  │ │ │Monitoreo │ │ │ │Operaciones│ │
+   │  │ - Usuarios  │  │ │ │Monitoreo │ │ │ │Operacioes│ │
    │  │ - Mina      │  │ │ │          │ │ │ │          │ │
    │  │ - Turno     │  │ │ │ Equipos  │ │ │ │ Ciclos   │ │
    │  │             │  │ │ │ Estados  │ │ │ │ KPIs     │ │
    │  │             │  │ │ │ Alertas  │ │ │ │          │ │
    │  └─────────────┘  │ │ │ KPIs     │ │ │ │          │ │
    │                   │ │ └──────────┘ │ │ └──────────┘ │
-   │  ┌─────────────┐  │ │              │ │              │ │
-   │  │Clean Arch   │  │ │ Clean Arch   │ │ Clean Arch   │ │
-   │  │+ DDD        │  │ │ + DDD        │ │ + DDD        │ │
-   │  └─────────────┘  │ │              │ │              │ │
+   │  ┌─────────────┐  │ │              │ │              │
+   │  │Clean Arch   │  │ │ Clean Arch   │ │ Clean Arch   │
+   │  │+ DDD        │  │ │ + DDD        │ │ + DDD        │
+   │  └─────────────┘  │ │              │ │              │
    └───────────────────┘ └──────────────┘ └──────────────┘
            │                    │                │
            └────────────────────┴────────────────┘
@@ -154,12 +154,12 @@ El Sistema de Monitoreo Minero ha evolucionado de una arquitectura de **2 micros
 
 ### Matriz de Responsabilidades
 
-| Servicio | Puerto | Bounded Contexts | Responsabilidades Principales |
-|----------|--------|------------------|------------------------------|
-| **Frontend** | 3000 | Presentación | UI, Proxy, Routing a servicios |
-| **Backend (Legacy)** | 4000 | Usuarios, Mina, Turno | Gestión usuarios, turnos, estructuras mineras |
-| **Monitoreo** | 5000 | Monitoreo | Gestión de equipos, estados, alertas, KPIs de equipos |
-| **Operaciones** | 6000 | Operaciones | Gestión de operaciones, ciclos, asignación equipos, KPIs operacionales |
+| Servicio             | Puerto | Bounded Contexts      | Responsabilidades Principales                                          |
+| -------------------- | ------ | --------------------- | ---------------------------------------------------------------------- |
+| **Frontend**         | 3000   | Presentación          | UI, Proxy, Routing a servicios                                         |
+| **Backend (Legacy)** | 4000   | Usuarios, Mina, Turno | Gestión usuarios, turnos, estructuras mineras                          |
+| **Monitoreo**        | 5000   | Monitoreo             | Gestión de equipos, estados, alertas, KPIs de equipos                  |
+| **Operaciones**      | 6000   | Operaciones           | Gestión de operaciones, ciclos, asignación equipos, KPIs operacionales |
 
 ---
 
@@ -170,11 +170,13 @@ El Sistema de Monitoreo Minero ha evolucionado de una arquitectura de **2 micros
 **Responsabilidad**: Capa de presentación
 
 **Tecnologías**:
+
 - Express.js (servidor estático)
 - HTTP Proxy Middleware
 - HTML/CSS/JavaScript
 
 **Características**:
+
 - Sirve interfaz de usuario
 - Proxy transparente a todos los servicios backend
 - Routing dinámico
@@ -188,6 +190,7 @@ El Sistema de Monitoreo Minero ha evolucionado de una arquitectura de **2 micros
 **Responsabilidad**: Monolito legacy con contextos restantes
 
 **Bounded Contexts**:
+
 - **Usuarios**: Autenticación, Operadores, Supervisores
 - **Mina**: Estructura de minas, frentes, zonas
 - **Turno**: Gestión de turnos, ciclos, rutas
@@ -203,6 +206,7 @@ El Sistema de Monitoreo Minero ha evolucionado de una arquitectura de **2 micros
 **Responsabilidad**: Bounded Context de Monitoreo de Equipos
 
 **Arquitectura**:
+
 ```
 servicio-monitoreo/
 ├── dominio/
@@ -236,6 +240,7 @@ servicio-monitoreo/
 ```
 
 **API Endpoints**:
+
 ```
 POST   /api/equipos - Crear equipo
 GET    /api/equipos - Listar equipos (filtros: tipo, estado)
@@ -245,6 +250,7 @@ GET    /api/monitoreo/kpis - Obtener KPIs de flota
 ```
 
 **KPIs Implementados**:
+
 - Tiempo de operación total
 - Combustible total disponible
 - Tasa de disponibilidad
@@ -260,6 +266,7 @@ GET    /api/monitoreo/kpis - Obtener KPIs de flota
 **Responsabilidad**: Bounded Context de Operaciones Mineras
 
 **Arquitectura**:
+
 ```
 servicio-operaciones/
 ├── dominio/
@@ -291,6 +298,7 @@ servicio-operaciones/
 ```
 
 **API Endpoints**:
+
 ```
 POST   /api/operaciones - Iniciar operación
 GET    /api/operaciones - Listar operaciones (filtros: supervisor, frente, activas)
@@ -300,6 +308,7 @@ GET    /api/kpis - Obtener KPIs operacionales
 ```
 
 **KPIs Implementados**:
+
 - Operaciones completadas
 - Tiempo de ciclo promedio
 - Equipos en operación
@@ -327,11 +336,13 @@ Frontend → HTTP POST /api/operaciones → Servicio Operaciones
 ```
 
 **Ventajas**:
+
 - Simple de implementar
 - Fácil de depurar
 - Respuesta inmediata
 
 **Desventajas**:
+
 - Acoplamiento temporal
 - Riesgo de cascada de fallos
 
@@ -356,11 +367,13 @@ Servicio Monitoreo
 ```
 
 **Ventajas**:
+
 - Desacoplamiento temporal
 - Mayor resiliencia
 - Escalabilidad
 
 **Desventajas**:
+
 - Complejidad adicional
 - Eventual consistency
 
@@ -389,6 +402,7 @@ Leyenda:
 #### Escenario: Asignar Equipo a una Operación
 
 **Flujo Actual (Síncrono)**:
+
 ```
 1. Usuario en Frontend → Click "Asignar equipo VOL-001 a Operación-123"
 
@@ -408,6 +422,7 @@ Leyenda:
 ```
 
 **Flujo Recomendado (Asíncrono - Futuro)**:
+
 ```
 1. Usuario en Frontend → Click "Asignar equipo VOL-001 a Operación-123"
 
@@ -445,26 +460,29 @@ Leyenda:
 **Decisión**: Los microservicios NO comparten objetos de dominio directamente. Solo se referencian por IDs.
 
 **Ejemplo en Operaciones**:
+
 ```typescript
 class Operacion {
-    private _supervisorId: string;      // ❌ NO: Supervisor objeto
-    private _frenteId: string;          // ❌ NO: Frente objeto
-    private _equiposAsignados: string[]; // ✅ SÍ: Array de IDs
+  private _supervisorId: string; // ❌ NO: Supervisor objeto
+  private _frenteId: string; // ❌ NO: Frente objeto
+  private _equiposAsignados: string[]; // ✅ SÍ: Array de IDs
 
-    asignarEquipo(equipoId: string): void {
-        // Solo guarda el ID, no el objeto Equipo completo
-        this._equiposAsignados.push(equipoId);
-    }
+  asignarEquipo(equipoId: string): void {
+    // Solo guarda el ID, no el objeto Equipo completo
+    this._equiposAsignados.push(equipoId);
+  }
 }
 ```
 
 **Ventajas**:
+
 - Servicios independientes
 - Sin dependencias de código compartido
 - Facilita versionado
 - Permite migración gradual
 
 **Trade-offs**:
+
 - Requiere validación de existencia en cada servicio
 - Posible inconsistencia temporal
 - Necesita eventos para sincronización
@@ -486,6 +504,7 @@ class Operacion {
 ```
 
 **Beneficios**:
+
 - Testabilidad
 - Mantenibilidad
 - Independencia de frameworks
@@ -496,11 +515,13 @@ class Operacion {
 **Decisión**: Usar repositorios en memoria para desarrollo/testing, preparados para PostgreSQL/MongoDB.
 
 **Ventajas**:
+
 - Desarrollo rápido sin setup de BD
 - Tests unitarios rápidos
 - Sin dependencias externas
 
 **Producción**:
+
 ```typescript
 // Desarrollo
 const repositorio = new MemoriaEquipoRepositorio();
@@ -520,7 +541,7 @@ const repositorio = new PostgresEquipoRepositorio(connectionString);
 const id = Math.random().toString();
 
 // ✅ CORRECTO
-import * as crypto from 'crypto';
+import * as crypto from "crypto";
 const id = crypto.randomUUID();
 ```
 
@@ -540,6 +561,7 @@ curl http://localhost:5000/health
 ```
 
 **Uso**:
+
 - Docker healthchecks
 - Load balancers
 - Monitoreo (Prometheus, etc.)
@@ -575,6 +597,7 @@ docker-compose down -v
 ```
 
 **Acceso**:
+
 - Frontend: http://localhost:3000
 - Backend: http://localhost:4000
 - Monitoreo: http://localhost:5000
@@ -583,6 +606,7 @@ docker-compose down -v
 ### Opción 2: Desarrollo Local (4 Terminales)
 
 **Terminal 1: Backend**
+
 ```bash
 cd backend
 npm install
@@ -591,6 +615,7 @@ npm run dev
 ```
 
 **Terminal 2: Frontend**
+
 ```bash
 cd frontend
 npm install
@@ -599,6 +624,7 @@ npm run dev
 ```
 
 **Terminal 3: Servicio Monitoreo**
+
 ```bash
 cd servicio-monitoreo
 npm install
@@ -607,6 +633,7 @@ npm run dev
 ```
 
 **Terminal 4: Servicio Operaciones**
+
 ```bash
 cd servicio-operaciones
 npm install
@@ -648,6 +675,7 @@ docker run -p 6000:6000 servicio-operaciones:latest
 **Tecnologías**: RabbitMQ o Apache Kafka
 
 **Eventos a implementar**:
+
 ```
 Monitoreo:
 - EquipoCreadoEvent
@@ -663,39 +691,40 @@ Operaciones:
 ```
 
 **Implementación**:
+
 ```typescript
 // En Servicio Operaciones
 class AsignarEquipoAOperacion {
-    async ejecutar(dto: AsignarEquipoDTO) {
-        // 1. Persistir cambio
-        operacion.asignarEquipo(dto.equipoId);
-        await this.repositorio.actualizar(operacion);
+  async ejecutar(dto: AsignarEquipoDTO) {
+    // 1. Persistir cambio
+    operacion.asignarEquipo(dto.equipoId);
+    await this.repositorio.actualizar(operacion);
 
-        // 2. Publicar evento
-        await this.eventBus.publish({
-            type: 'EquipoAsignadoAOperacion',
-            data: {
-                operacionId: operacion.id,
-                equipoId: dto.equipoId,
-                timestamp: new Date()
-            }
-        });
-    }
+    // 2. Publicar evento
+    await this.eventBus.publish({
+      type: "EquipoAsignadoAOperacion",
+      data: {
+        operacionId: operacion.id,
+        equipoId: dto.equipoId,
+        timestamp: new Date(),
+      },
+    });
+  }
 }
 
 // En Servicio Monitoreo
 class EquipoAsignadoEventHandler {
-    async handle(event: EquipoAsignadoEvent) {
-        const equipo = await this.equipoRepo.obtenerPorId(event.equipoId);
-        equipo.cambiarEstado('OPERANDO');
-        await this.equipoRepo.actualizar(equipo);
+  async handle(event: EquipoAsignadoEvent) {
+    const equipo = await this.equipoRepo.obtenerPorId(event.equipoId);
+    equipo.cambiarEstado("OPERANDO");
+    await this.equipoRepo.actualizar(equipo);
 
-        // Propagar evento
-        await this.eventBus.publish({
-            type: 'EstadoEquipoCambiado',
-            data: { equipoId: equipo.id, nuevoEstado: 'OPERANDO' }
-        });
-    }
+    // Propagar evento
+    await this.eventBus.publish({
+      type: "EstadoEquipoCambiado",
+      data: { equipoId: equipo.id, nuevoEstado: "OPERANDO" },
+    });
+  }
 }
 ```
 
@@ -706,6 +735,7 @@ class EquipoAsignadoEventHandler {
 **Tecnologías**: Kong, NGINX, AWS API Gateway
 
 **Beneficios**:
+
 - Punto de entrada único
 - Autenticación centralizada
 - Rate limiting
@@ -727,6 +757,7 @@ class EquipoAsignadoEventHandler {
 ### Fase 4: Extraer Más Microservicios
 
 **Candidatos**:
+
 - **Servicio de Usuarios** (Autenticación, Operadores, Supervisores)
 - **Servicio de Mina** (Estructura de minas, frentes, zonas)
 - **Servicio de Turnos** (Gestión de turnos, ciclos, rutas)
@@ -736,6 +767,7 @@ class EquipoAsignadoEventHandler {
 **Objetivo**: Implementar stack de observabilidad completo
 
 **Tecnologías**:
+
 - **Logging**: ELK Stack (Elasticsearch, Logstash, Kibana)
 - **Métricas**: Prometheus + Grafana
 - **Tracing**: Jaeger o Zipkin
@@ -768,20 +800,24 @@ Backend Legacy → PostgreSQL (sistema_db)
 ### Beneficios Obtenidos
 
 **Escalabilidad**:
+
 - Cada servicio escala independientemente
 - Diferentes recursos por servicio (CPU, memoria)
 
 **Desarrollo**:
+
 - Equipos dedicados por bounded context
 - Deploys independientes
 - Menos conflictos en código
 
 **Mantenibilidad**:
+
 - Código más pequeño y manejable
 - Cambios localizados
 - Menos riesgo en modificaciones
 
 **Resiliencia**:
+
 - Fallos aislados (con eventos)
 - Health checks para monitoreo
 - Reintentos y circuit breakers (futuro)
@@ -789,16 +825,19 @@ Backend Legacy → PostgreSQL (sistema_db)
 ### Próximos Pasos Recomendados
 
 **Corto Plazo (2-4 semanas)**:
+
 1. Implementar comunicación asíncrona con RabbitMQ
 2. Agregar tests unitarios y de integración
 3. Configurar CI/CD (GitHub Actions)
 
 **Mediano Plazo (1-3 meses)**:
+
 1. Implementar API Gateway (Kong/NGINX)
 2. Migrar a bases de datos reales (PostgreSQL)
 3. Implementar observabilidad (ELK + Prometheus)
 
 **Largo Plazo (3-6 meses)**:
+
 1. Extraer servicios de Usuarios, Mina, Turnos
 2. Implementar CQRS + Event Sourcing
 3. Desplegar en Kubernetes
@@ -809,24 +848,29 @@ Backend Legacy → PostgreSQL (sistema_db)
 ## Referencias
 
 ### Arquitectura
+
 - [Microsoft - Microservices Architecture](https://learn.microsoft.com/en-us/azure/architecture/microservices/)
 - [Martin Fowler - Microservices](https://martinfowler.com/articles/microservices.html)
 - [Sam Newman - Building Microservices](https://samnewman.io/books/building_microservices_2nd_edition/)
 
 ### Domain-Driven Design
+
 - Eric Evans - "Domain-Driven Design: Tackling Complexity in the Heart of Software"
 - Vaughn Vernon - "Implementing Domain-Driven Design"
 
 ### Clean Architecture
+
 - Robert C. Martin - "Clean Architecture"
 - Robert C. Martin - "Clean Code"
 
 ### Comunicación entre Microservicios
+
 - [Event-Driven Architecture](https://martinfowler.com/articles/201701-event-driven.html)
 - [Saga Pattern](https://microservices.io/patterns/data/saga.html)
 - [API Gateway Pattern](https://microservices.io/patterns/apigateway.html)
 
 ### Tecnologías
+
 - [Docker Documentation](https://docs.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
 - [RabbitMQ](https://www.rabbitmq.com/)

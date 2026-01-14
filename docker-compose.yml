@@ -16,36 +16,36 @@ version: '3.8'
 
 services:
   # ==================================
-  # Jenkins CI/CD Server - NUEVO
+  # Jenkins CI/CD Server - COMENTADO (ya está corriendo aparte)
   # ==================================
-  jenkins:
-    build:
-      context: ./jenkins
-      dockerfile: Dockerfile
-    container_name: jenkins-cicd
-    privileged: true
-    user: root
-    ports:
-      - "9090:8080"   # Jenkins Web UI (puerto externo cambiado a 9090)
-      - "50001:50000" # Jenkins Agent (puerto externo cambiado a 50001)
-    # environment:
-      # JENKINS_OPTS y JAVA_OPTS comentados para configuración por defecto
-      # - JENKINS_OPTS=--prefix=/jenkins
-      # - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - microservices-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/login || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
+  # jenkins:
+  #   build:
+  #     context: ./jenkins
+  #     dockerfile: Dockerfile
+  #   container_name: jenkins-cicd
+  #   privileged: true
+  #   user: root
+  #   ports:
+  #     - "9090:8080"   # Jenkins Web UI (puerto externo cambiado a 9090)
+  #     - "50001:50000" # Jenkins Agent (puerto externo cambiado a 50001)
+  #   # environment:
+  #     # JENKINS_OPTS y JAVA_OPTS comentados para configuración por defecto
+  #     # - JENKINS_OPTS=--prefix=/jenkins
+  #     # - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+  #   volumes:
+  #     - jenkins_home:/var/jenkins_home
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   networks:
+  #     - microservices-network
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "curl -f http://localhost:8080/login || exit 1"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 60s
   # ==================================
-  # API Gateway (NGINX) - NUEVO 
+  # API Gateway (NGINX)
   # ==================================
   api-gateway:
     build:
