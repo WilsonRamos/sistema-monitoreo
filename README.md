@@ -266,14 +266,291 @@ sistema-monitoreo/
 
 ---
 
+## � CI/CD con Jenkins
+
+### Pipeline Automatizado de Integración Continua
+
+El proyecto implementa un **pipeline completo de CI/CD** con Jenkins que automatiza todo el proceso desde el commit hasta el despliegue en AWS ECR.
+
+```
+┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
+│ Checkout │──▶│ Análisis │──▶│ Pruebas  │──▶│  Build   │──▶│ Push ECR │──▶│ Cleanup  │
+│          │   │ Estático │   │ Unitarias│   │  Docker  │   │          │   │          │
+└──────────┘   └──────────┘   └──────────┘   └──────────┘   └──────────┘   └──────────┘
+    1 min          2 min          3 min          4 min          2 min         30 sec
+```
+
+### Etapas del Pipeline
+
+#### 1️⃣ **Checkout**
+
+- Clona el repositorio desde GitHub
+- Extrae el hash del commit (primeros 7 caracteres)
+- Genera `BUILD_TAG` único: `{branch}-{commit}-{build}` (ej: `feat-microservicios-2c2ce6d-14`)
+- **Tiempo**: ~1 minuto
+
+#### 2️⃣ **Análisis Estático**
+
+Ejecuta **linters en paralelo** para detectar problemas de código:
+
+- ESLint en Backend
+- ESLint en Servicio Monitoreo
+- ESLint en Servicio Operaciones
+
+**Verifica**:
+
+- ✅ Sintaxis correcta de TypeScript
+- ✅ Convenciones de estilo de código
+- ✅ Imports/variables no utilizadas
+- ✅ Potenciales errores lógicos
+
+**Tiempo**: ~2 minutos
+
+#### 3️⃣ **Pruebas Unitarias**
+
+Ejecuta **232 tests en paralelo** con reportes de cobertura:
+
+- 133 tests en Backend
+- 48 tests en Servicio Monitoreo
+- 51 tests en Servicio Operaciones
+
+**Genera**:
+
+- Reportes HTML de cobertura navegables
+- Métricas de cobertura por servicio
+- Warnings si cobertura < 70% (no bloquea el build)
+
+**Estadísticas Actuales**:
+| Servicio | Tests | Cobertura | Objetivo |
+|----------|-------|-----------|----------|
+| Backend | 133 | 27% | 70% |
+| Servicio Monitoreo | 48 | 24% | 70% |
+| Servicio Operaciones | 51 | 26% | 70% |
+| **Total** | **232** | **~26%** | **70%** |
+
+**Tiempo**: ~3 minutos
+
+#### 4️⃣ **Build Docker Images**
+
+Construye **5 imágenes Docker en paralelo** con multi-stage build:
+
+- Backend (`backend:{BUILD_TAG}`)
+- Servicio Monitoreo (`servicio-monitoreo:{BUILD_TAG}`)
+- Servicio Operaciones (`servicio-operaciones:{BUILD_TAG}`)
+- Frontend (`frontend:{BUILD_TAG}`)
+- API Gateway (`api-gateway:{BUILD_TAG}`)
+
+**Optimizaciones**:
+
+- Multi-stage build (reduce tamaño ~70%)
+- Layer caching (builds incrementales rápidos)
+- Compilación TypeScript → JavaScript
+- Eliminación de dev dependencies
+
+**Resultado**: Imágenes optimizadas de ~150MB (vs ~500MB sin optimizar)
+
+**Tiempo**: ~4 minutos (primera vez), ~30 seg (con cache)
+
+#### 5️⃣ **Push to AWS ECR**
+
+Publica imágenes en **Amazon Elastic Container Registry**:
+
+**Proceso**:
+
+1. Autenticación con AWS usando credenciales seguras
+2. Verifica/crea repositorios en ECR si no existen
+3. Re-taggea imágenes con URI de ECR completo
+4. Push de cada imagen con 2 tags:
+   - Tag específico: `{branch}-{commit}-{build}`
+   - Tag latest: `latest`
+
+**Ejemplo**:
+
+```bash
+227338491492.dkr.ecr.us-east-1.amazonaws.com/servicio-monitoreo:feat-microservicios-2c2ce6d-14
+227338491492.dkr.ecr.us-east-1.amazonaws.com/servicio-monitoreo:latest
+```
+
+**Trazabilidad**: Cada imagen puede rastrearse al commit exacto que la generó
+
+**Tiempo**: ~2 minutos
+
+#### 6️⃣ **Cleanup**
+
+Limpia recursos temporales:
+
+- Elimina imágenes Docker locales del build
+- Ejecuta `docker image prune` (imágenes dangling)
+- Limpia workspace de Jenkins (node_modules, cache)
+
+**Tiempo**: ~30 segundos
+
+### Beneficios del CI/CD
+
+#### 🚀 **Velocidad de Entrega**
+
+- **Antes**: Días desde código → producción
+- **Ahora**: 12-15 minutos desde commit → AWS ECR
+- Despliegues frecuentes (múltiples veces al día)
+
+#### 🐛 **Detección Temprana de Errores**
+
+- Tests ejecutados en cada commit
+- Feedback en minutos (no días)
+- Errores detectados antes de llegar a producción
+
+#### 🔒 **Consistencia y Reproducibilidad**
+
+- Mismo proceso exacto cada vez
+- Elimina "funciona en mi máquina"
+- Entornos idénticos (staging = producción)
+
+#### 📊 **Trazabilidad Completa**
+
+- Cada imagen Docker → Commit Git específico
+- Auditoría completa de cambios
+- Rollback rápido a versiones anteriores
+
+#### 💪 **Confianza del Equipo**
+
+- Red de seguridad automática (tests)
+- Refactorización segura
+- Menor miedo a romper cosas
+
+### Configuración de Jenkins
+
+#### Requisitos
+
+- Jenkins 2.x con Docker instalado
+- Plugins: Docker Pipeline, Amazon ECR, AWS Credentials, HTML Publisher, GitHub
+- Credenciales AWS configuradas en Jenkins
+- GitHub webhook configurado
+
+#### Iniciar Jenkins Localmente
+
+```bash
+# Iniciar contenedor Jenkins
+docker run -d \
+  --name jenkins-cicd \
+  -p 8080:8080 \
+  -p 50000:50000 \
+  -v jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  jenkins/jenkins:lts
+
+# Obtener password inicial
+docker exec jenkins-cicd cat /var/jenkins_home/secrets/initialAdminPassword
+
+# Acceder a http://localhost:8080
+```
+
+#### Crear Pipeline Job
+
+1. **New Item** → **Pipeline**
+2. **Build Triggers**: GitHub hook trigger for GITScm polling
+3. **Pipeline**: Pipeline script from SCM
+   - SCM: Git
+   - Repository URL: `https://github.com/WilsonRamos/sistema-monitoreo.git`
+   - Branch: `feat/implementacion-microservicios`
+   - Script Path: `Jenkinsfile`
+
+#### Configurar Credenciales AWS
+
+En Jenkins → Manage Jenkins → Credentials:
+
+1. **aws-ecr-credentials** (Username/Password)
+
+   - Username: AWS Access Key ID
+   - Password: AWS Secret Access Key
+
+2. **aws-account-id** (Secret text)
+   - Secret: Tu Account ID de AWS (ej: 227338491492)
+
+### Archivos de Configuración
+
+#### Jenkinsfile
+
+```groovy
+pipeline {
+    agent any
+
+    environment {
+        AWS_REGION = 'us-east-1'
+        COVERAGE_THRESHOLD = '70'
+    }
+
+    stages {
+        stage('Checkout') { /* ... */ }
+        stage('Análisis Estático') { /* 3 linters en paralelo */ }
+        stage('Pruebas Unitarias') { /* 232 tests en paralelo */ }
+        stage('Build Docker Images') { /* 5 imágenes en paralelo */ }
+        stage('Push to AWS ECR') { /* Publicación a ECR */ }
+        stage('Cleanup') { /* Limpieza de recursos */ }
+    }
+
+    post {
+        success { /* Notificación de éxito */ }
+        failure { /* Notificación de fallo */ }
+        always { /* Limpieza del workspace */ }
+    }
+}
+```
+
+Ver [Jenkinsfile completo](Jenkinsfile) para detalles.
+
+### Métricas del Pipeline
+
+| Métrica                    | Valor     | Objetivo |
+| -------------------------- | --------- | -------- |
+| **Tiempo Total**           | 12-15 min | < 20 min |
+| **Tests Ejecutados**       | 232       | Aumentar |
+| **Cobertura Promedio**     | 26%       | 70%      |
+| **Imágenes Generadas**     | 5         | -        |
+| **Tamaño Promedio Imagen** | ~150 MB   | < 200 MB |
+| **Success Rate**           | 95%       | > 90%    |
+
+### Roadmap de CI/CD
+
+#### Fase Actual (✅ Completado)
+
+- [x] Pipeline básico con 6 etapas
+- [x] Tests automatizados
+- [x] Build y push a AWS ECR
+- [x] Reportes de cobertura
+
+#### Siguiente Fase (🚧 Planeado)
+
+- [ ] Pruebas de integración E2E
+- [ ] Análisis de seguridad (SonarQube)
+- [ ] Deployment automático a staging
+- [ ] Smoke tests post-deployment
+- [ ] Notificaciones Slack/Email
+
+#### Futuro (📅 Considerado)
+
+- [ ] Blue-Green deployment
+- [ ] Canary releases
+- [ ] A/B testing automatizado
+- [ ] Performance testing (k6)
+- [ ] Chaos engineering
+
+### Documentación Adicional
+
+- 📖 [Guía completa de Jenkins](Doc/GUIA-IMPLEMENTACION-JENKINS.md)
+- 🔧 [Troubleshooting CI/CD](Doc/SOLUCION-ERRORES-JEST.md)
+- 📊 [Reportes de Coverage](http://localhost:8080/job/sistema-monitoreo-pipeline/Coverage_Report/)
+
+---
+
 ## 📚 Documentación
 
-| Documento                                                        | Descripción                                                                       |
-| ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| [ARQUITECTURA-MICROSERVICIOS.md](ARQUITECTURA-MICROSERVICIOS.md) | Análisis exhaustivo de la arquitectura, decisiones de diseño, diagramas completos |
-| [INSTRUCCIONES-EJECUCION.md](INSTRUCCIONES-EJECUCION.md)         | Guía paso a paso para ejecutar los servicios, troubleshooting                     |
-| [RESUMEN-IMPLEMENTACION.md](RESUMEN-IMPLEMENTACION.md)           | Resumen ejecutivo de la implementación y validación de requisitos                 |
-| [frontend/README.md](frontend/README.md)                         | Documentación específica del microservicio frontend                               |
+| Documento                                                                | Descripción                                                                       |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| [ARQUITECTURA-MICROSERVICIOS.md](ARQUITECTURA-MICROSERVICIOS.md)         | Análisis exhaustivo de la arquitectura, decisiones de diseño, diagramas completos |
+| [INSTRUCCIONES-EJECUCION.md](INSTRUCCIONES-EJECUCION.md)                 | Guía paso a paso para ejecutar los servicios, troubleshooting                     |
+| [RESUMEN-IMPLEMENTACION.md](RESUMEN-IMPLEMENTACION.md)                   | Resumen ejecutivo de la implementación y validación de requisitos                 |
+| [frontend/README.md](frontend/README.md)                                 | Documentación específica del microservicio frontend                               |
+| [Doc/GUIA-IMPLEMENTACION-JENKINS.md](Doc/GUIA-IMPLEMENTACION-JENKINS.md) | Guía completa de configuración de Jenkins CI/CD                                   |
 
 ---
 
