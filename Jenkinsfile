@@ -347,10 +347,11 @@ pipeline {
         // =====================================================
         stage('Push to AWS ECR') {
             when {
-                // Solo pushear en rama main o en PRs aprobados
+                // Pushear en cualquier rama (temporal para testing)
                 anyOf {
                     branch 'main'
                     branch 'develop'
+                    branch 'feat/implementacion-microservicios'
                     expression { env.CHANGE_TARGET == 'main' && env.CHANGE_ID != null }
                 }
             }
