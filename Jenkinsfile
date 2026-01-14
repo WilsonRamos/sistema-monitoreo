@@ -34,11 +34,8 @@ pipeline {
     
     // Triggers del pipeline
     triggers {
-        // Ejecutar en cada Pull Request
-        githubPullRequests(
-            triggerMode: 'CRON',
-            spec: 'H/5 * * * *'
-        )
+        // Ejecutar cuando GitHub envíe un push event (via webhook)
+        githubPush()
     }
     
     // Opciones del pipeline
