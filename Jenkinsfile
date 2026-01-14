@@ -346,16 +346,6 @@ pipeline {
         // STAGE 5: PUSH A AWS ECR
         // =====================================================
         stage('Push to AWS ECR') {
-            when {
-                // Pushear en cualquier rama (temporal para testing)
-                anyOf {
-                    branch 'main'
-                    branch 'develop'
-                    branch 'feat/implementacion-microservicios'
-                    expression { env.CHANGE_TARGET == 'main' && env.CHANGE_ID != null }
-                }
-            }
-
             steps {
                 script {
                     withCredentials([
