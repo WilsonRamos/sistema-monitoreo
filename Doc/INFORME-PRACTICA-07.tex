@@ -1,0 +1,2294 @@
+\documentclass[12pt,a4paper]{article}
+
+% ========================================
+% PAQUETES
+% ========================================
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{tocloft}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ========================================
+% CONFIGURACIÓN DE PÁGINA
+% ========================================
+\geometry{
+    top=2.5cm,
+    bottom=2.5cm,
+    left=3cm,
+    right=2.5cm
+}
+
+% ========================================
+% CONFIGURACIÓN DE COLORES
+% ========================================
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{azulunsa}{RGB}{30,60,114}
+\definecolor{doradounsa}{RGB}{255,215,0}
+
+% ========================================
+% CONFIGURACIÓN DE LISTINGS
+% ========================================
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% ========================================
+% CONFIGURACIÓN DE HYPERREF
+% ========================================
+\hypersetup{
+    colorlinks=true,
+    linkcolor=azulunsa,
+    filecolor=magenta,
+    urlcolor=cyan,
+    citecolor=azulunsa,
+    pdftitle={Práctica 07 - Rediseño a Microservicios},
+    pdfauthor={Sistema de Monitoreo Minero},
+}
+
+% ========================================
+% CONFIGURACIÓN DE ENCABEZADOS
+% ========================================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% ========================================
+% CONFIGURACIÓN DE TÍTULOS
+% ========================================
+\titleformat{\section}
+{\color{azulunsa}\normalfont\Large\bfseries}
+{\color{azulunsa}\thesection}{1em}{}
+
+\titleformat{\subsection}
+{\color{azulunsa}\normalfont\large\bfseries}
+{\color{azulunsa}\thesubsection}{1em}{}
+
+% ========================================
+% INICIO DEL DOCUMENTO
+% ========================================
+\begin{document}
+
+% ========================================
+% PORTADA
+% ========================================
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+
+    {\LARGE\bfseries Universidad Nacional de San Agustín de Arequipa\par}
+    \vspace{0.5cm}
+    {\Large Facultad de Ingeniería de Producción y Servicios\par}
+    \vspace{0.3cm}
+    {\Large Escuela Profesional de Ingeniería de Sistemas\par}
+
+    \vspace{2cm}
+
+    {\huge\bfseries Práctica 07\par}
+    \vspace{0.5cm}
+    {\LARGE\bfseries Rediseño de Arquitectura Monolítica\par}
+    {\LARGE\bfseries a Microservicios con DDD\par}
+
+    \vspace{1.5cm}
+
+    {\Large\itshape Sistema de Monitoreo Minero\par}
+
+    \vspace{2cm}
+
+    {\Large\textbf{Curso:} Ingeniería de Software II\par}
+    \vspace{0.3cm}
+    {\Large\textbf{Docente:} [Nombre del Docente]\par}
+
+    \vfill
+
+    {\large Arequipa, Perú\par}
+    {\large Enero 2026\par}
+\end{titlepage}
+
+% ========================================
+% ÍNDICE
+% ========================================
+\tableofcontents
+\newpage
+
+% ========================================
+% RESUMEN EJECUTIVO
+% ========================================
+\section{Resumen Ejecutivo}
+
+El presente informe documenta el proceso de rediseño del \textbf{Sistema de Monitoreo Minero}, transformando una arquitectura monolítica tradicional hacia una arquitectura moderna de microservicios, siguiendo los lineamientos establecidos en la Práctica 07 y aplicando principios fundamentales de \textit{Domain-Driven Design} (DDD) y \textit{Clean Architecture}.
+
+\subsection{Contexto del Proyecto}
+
+El Sistema de Monitoreo Minero es una aplicación empresarial diseñada para gestionar y monitorear equipos de maquinaria pesada en operaciones mineras. La versión inicial del sistema presentaba las siguientes características:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Arquitectura monolítica}: Todas las capas (presentación, lógica de negocio, persistencia) integradas en una única aplicación.
+    \item \textbf{Acoplamiento fuerte}: La interfaz de usuario estaba directamente acoplada al backend.
+    \item \textbf{Despliegue único}: Cualquier cambio requería redesplegar la aplicación completa.
+    \item \textbf{Escalabilidad limitada}: Imposibilidad de escalar componentes de forma independiente.
+\end{itemize}
+
+\subsection{Objetivos Alcanzados}
+
+El rediseño arquitectónico ha logrado exitosamente los siguientes objetivos:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Desacoplamiento Frontend-Backend}: Separación completa de la capa de presentación (frontend) de la lógica de negocio (backend), permitiendo desarrollo, despliegue y escalamiento independientes.
+
+    \item \textbf{Implementación de Microservicios}: Transformación del monolito en dos microservicios independientes:
+    \begin{itemize}
+        \item \textbf{Frontend Microservice} (puerto 3000): Servidor de presentación con proxy inteligente
+        \item \textbf{Backend Microservice} (puerto 4000): API REST con lógica de negocio
+    \end{itemize}
+
+    \item \textbf{Comunicación API RESTful}: Implementación de una capa de comunicación basada en APIs REST, siguiendo los principios de diseño RESTful y mejores prácticas de la industria.
+
+    \item \textbf{Autenticación y Autorización JWT}: Sistema completo de seguridad basado en tokens JWT con:
+    \begin{itemize}
+        \item Hash seguro de contraseñas mediante bcrypt
+        \item Control de acceso basado en roles (RBAC)
+        \item Protección de rutas en frontend y backend
+        \item Tokens con expiración configurable
+    \end{itemize}
+
+    \item \textbf{Arquitectura Limpia Preservada}: Mantenimiento de los principios de Clean Architecture en el backend:
+    \begin{itemize}
+        \item Capa de Dominio (entidades, servicios, repositorios)
+        \item Capa de Aplicación (casos de uso)
+        \item Capa de Infraestructura (implementaciones)
+        \item Capa de Presentación (controladores, rutas)
+    \end{itemize}
+
+    \item \textbf{Domain-Driven Design}: Aplicación rigurosa de patrones DDD:
+    \begin{itemize}
+        \item Identificación de Bounded Contexts (Monitoreo, Operaciones, Usuarios)
+        \item Definición de Agregados y Entidades
+        \item Lenguaje Ubicuo del dominio minero
+        \item Servicios de Dominio especializados
+    \end{itemize}
+
+    \item \textbf{Containerización}: Dockerización completa del sistema:
+    \begin{itemize}
+        \item Dockerfiles optimizados con multi-stage builds
+        \item Orquestación con Docker Compose
+        \item Configuración de redes y volúmenes
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Beneficios Obtenidos}
+
+La transformación arquitectónica ha generado beneficios tangibles e intangibles:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Escalabilidad}: Cada microservicio puede escalar horizontalmente de forma independiente según demanda.
+    \item \textbf{Mantenibilidad}: Código más organizado, modular y fácil de mantener.
+    \item \textbf{Flexibilidad Tecnológica}: Posibilidad de usar diferentes tecnologías para cada servicio.
+    \item \textbf{Despliegue Continuo}: Capacidad de desplegar servicios individuales sin afectar al sistema completo.
+    \item \textbf{Aislamiento de Fallos}: Errores en un servicio no comprometen el sistema entero.
+    \item \textbf{Desarrollo en Paralelo}: Equipos diferentes pueden trabajar en servicios distintos simultáneamente.
+\end{itemize}
+
+\newpage
+
+% ========================================
+% MARCO TEÓRICO
+% ========================================
+\section{Marco Teórico}
+
+\subsection{Arquitectura de Microservicios}
+
+\subsubsection{Concepto Fundamental}
+
+La \textbf{arquitectura de microservicios} es un enfoque arquitectónico que estructura una aplicación como una colección de servicios pequeños, autónomos y débilmente acoplados. Cada microservicio:
+
+\begin{itemize}[leftmargin=*]
+    \item Es independiente y autónomo
+    \item Se comunica mediante protocolos ligeros (HTTP/REST, gRPC)
+    \item Puede ser desplegado, actualizado y escalado de forma independiente
+    \item Está organizado alrededor de capacidades de negocio
+    \item Es mantenido por equipos pequeños
+\end{itemize}
+
+\subsubsection{Principios Fundamentales}
+
+\textbf{1. Single Responsibility Principle (SRP)}
+
+Cada microservicio debe tener una única responsabilidad bien definida. En nuestro sistema:
+\begin{itemize}
+    \item \textit{Frontend Service}: Responsable exclusivamente de la presentación
+    \item \textit{Backend Service}: Responsable de la lógica de negocio y persistencia
+\end{itemize}
+
+\textbf{2. Autonomía de Servicios}
+
+Los microservicios deben ser capaces de funcionar de manera independiente:
+\begin{itemize}
+    \item Base de código separada
+    \item Proceso de despliegue independiente
+    \item Base de datos propia (cuando aplique)
+    \item Gestión de versiones independiente
+\end{itemize}
+
+\textbf{3. Comunicación Ligera}
+
+Los servicios se comunican mediante protocolos estándar:
+\begin{itemize}
+    \item \textbf{HTTP/REST}: Para comunicación sincrónica (implementado)
+    \item \textbf{Message Queues}: Para comunicación asíncrona (futuro)
+\end{itemize}
+
+\subsubsection{Ventajas vs Desventajas}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{7cm}|p{7cm}|}
+\hline
+\textbf{Ventajas} & \textbf{Desventajas} \\
+\hline
+Escalabilidad independiente por servicio & Mayor complejidad operacional \\
+\hline
+Aislamiento de fallos & Necesidad de orquestación \\
+\hline
+Flexibilidad tecnológica & Dificultad en testing end-to-end \\
+\hline
+Despliegue continuo facilitado & Latencia de red entre servicios \\
+\hline
+Equipos independientes & Gestión de datos distribuidos \\
+\hline
+\end{tabular}
+\caption{Comparación de ventajas y desventajas de microservicios}
+\end{table}
+
+\subsection{Domain-Driven Design (DDD)}
+
+\subsubsection{Conceptos Fundamentales}
+
+\textbf{Domain-Driven Design} es un enfoque de diseño de software que pone énfasis en:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{El Dominio}: El área de conocimiento o actividad alrededor de la cual gira la aplicación.
+    \item \textbf{El Modelo de Dominio}: Una representación abstracta del dominio que resuelve problemas específicos.
+    \item \textbf{El Lenguaje Ubicuo}: Un lenguaje común compartido por desarrolladores y expertos del dominio.
+\end{enumerate}
+
+\subsubsection{Bounded Context (Contexto Delimitado)}
+
+Un \textbf{Bounded Context} es un límite conceptual dentro del cual un modelo de dominio particular es definido y aplicable. En nuestro sistema identificamos tres Bounded Contexts:
+
+\textbf{1. Contexto de Monitoreo}
+\begin{itemize}
+    \item \textbf{Responsabilidad}: Gestión y seguimiento de equipos mineros
+    \item \textbf{Entidades}: Equipo, Volquete, Excavadora, Bulldozer
+    \item \textbf{Value Objects}: EstadoEquipo, UbicacionGPS
+    \item \textbf{Servicios}: MonitoreoServiciosDominio
+\end{itemize}
+
+\textbf{2. Contexto de Operaciones}
+\begin{itemize}
+    \item \textbf{Responsabilidad}: Gestión de operaciones y ciclos de trabajo
+    \item \textbf{Entidades}: Operacion, Ciclo
+    \item \textbf{Servicios}: ServicioCalculoKPIs
+\end{itemize}
+
+\textbf{3. Contexto de Usuarios}
+\begin{itemize}
+    \item \textbf{Responsabilidad}: Gestión de usuarios y autenticación
+    \item \textbf{Entidades}: Usuario, Operador, Supervisor
+    \item \textbf{Servicios}: PasswordServicio
+\end{itemize}
+
+\subsubsection{Agregados y Entidades}
+
+\textbf{Agregado (Aggregate)}
+
+Un agregado es un conjunto de objetos del dominio que se tratan como una unidad para cambios de datos. Cada agregado tiene:
+\begin{itemize}
+    \item Una \textbf{raíz de agregado} (Aggregate Root)
+    \item Límites de consistencia bien definidos
+    \item Referencias por identidad a otros agregados
+\end{itemize}
+
+Ejemplo en nuestro sistema:
+\begin{itemize}
+    \item \textbf{Equipo} es la raíz del agregado de monitoreo
+    \item Contiene información de estado, ubicación y operaciones
+    \item Se accede siempre a través de la raíz
+\end{itemize}
+
+\textbf{Entidad (Entity)}
+
+Una entidad es un objeto con identidad única que persiste en el tiempo:
+\begin{itemize}
+    \item Tiene un identificador único
+    \item Su identidad es más importante que sus atributos
+    \item Dos entidades son iguales si tienen el mismo ID
+\end{itemize}
+
+\textbf{Value Object (Objeto de Valor)}
+
+Un objeto de valor es inmutable y se define por sus atributos:
+\begin{itemize}
+    \item No tiene identidad propia
+    \item Es inmutable
+    \item Dos value objects son iguales si todos sus atributos son iguales
+\end{itemize}
+
+Ejemplo: \texttt{EstadoEquipo} (DISPONIBLE, EN\_OPERACION, etc.)
+
+\subsection{Clean Architecture}
+
+\subsubsection{Principios de Clean Architecture}
+
+La \textbf{Clean Architecture}, propuesta por Robert C. Martin (Uncle Bob), organiza el código en capas con dependencias que fluyen hacia adentro:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.8]
+    % Círculos concéntricos
+    \draw[fill=azulunsa!10] (0,0) circle (4cm);
+    \draw[fill=azulunsa!20] (0,0) circle (3cm);
+    \draw[fill=azulunsa!30] (0,0) circle (2cm);
+    \draw[fill=azulunsa!40] (0,0) circle (1cm);
+
+    % Etiquetas
+    \node at (0,0) {\textbf{Dominio}};
+    \node at (0,1.5) {\textbf{Aplicación}};
+    \node at (0,2.5) {\textbf{Infraestructura}};
+    \node at (0,3.5) {\textbf{Presentación}};
+
+    % Flechas de dependencia
+    \draw[->,thick] (0,3.2) -- (0,2.8);
+    \draw[->,thick] (0,2.2) -- (0,1.8);
+    \draw[->,thick] (0,1.2) -- (0,0.8);
+\end{tikzpicture}
+\caption{Capas de Clean Architecture y flujo de dependencias}
+\end{figure}
+
+\textbf{Regla de Dependencia}
+
+Las dependencias fluyen siempre hacia adentro:
+\begin{itemize}
+    \item Las capas internas no conocen las capas externas
+    \item El dominio no depende de nada
+    \item La infraestructura depende del dominio (implementa interfaces)
+    \item La presentación depende de aplicación
+\end{itemize}
+
+\subsubsection{Capas Implementadas}
+
+\textbf{1. Capa de Dominio (Núcleo)}
+
+Contiene la lógica de negocio pura:
+\begin{itemize}
+    \item \textbf{Entidades}: Objetos con identidad (Usuario, Equipo, Operacion)
+    \item \textbf{Value Objects}: Objetos inmutables (EstadoEquipo, UbicacionGPS)
+    \item \textbf{Servicios de Dominio}: Lógica que no pertenece a una entidad
+    \item \textbf{Interfaces de Repositorio}: Contratos para persistencia
+    \item \textbf{Reglas de Negocio}: Validaciones y políticas del dominio
+\end{itemize}
+
+Características:
+\begin{itemize}
+    \item Sin dependencias externas
+    \item Totalmente testeable
+    \item Independiente de frameworks
+\end{itemize}
+
+\textbf{2. Capa de Aplicación (Casos de Uso)}
+
+Orquesta la lógica de negocio:
+\begin{itemize}
+    \item \textbf{Casos de Uso}: Acciones específicas del sistema (CrearEquipo, Login)
+    \item \textbf{DTOs}: Objetos de transferencia de datos
+    \item \textbf{Orquestación}: Coordina entidades y servicios
+\end{itemize}
+
+Características:
+\begin{itemize}
+    \item Depende solo del dominio
+    \item No conoce detalles de infraestructura
+    \item Define interfaces que necesita
+\end{itemize}
+
+\textbf{3. Capa de Infraestructura}
+
+Implementa detalles técnicos:
+\begin{itemize}
+    \item \textbf{Repositorios}: Implementaciones de persistencia
+    \item \textbf{Servicios Externos}: APIs, servicios de terceros
+    \item \textbf{Configuración}: Base de datos, conexiones
+\end{itemize}
+
+Características:
+\begin{itemize}
+    \item Implementa interfaces del dominio
+    \item Contiene detalles técnicos
+    \item Cambiable sin afectar el dominio
+\end{itemize}
+
+\textbf{4. Capa de Presentación}
+
+Maneja la interacción con el exterior:
+\begin{itemize}
+    \item \textbf{Controladores}: Manejan peticiones HTTP
+    \item \textbf{Rutas}: Definen endpoints de API
+    \item \textbf{Middleware}: Autenticación, validación
+    \item \textbf{Serializadores}: Conversión de formatos
+\end{itemize}
+
+\subsection{Autenticación JWT}
+
+\subsubsection{JSON Web Tokens (JWT)}
+
+\textbf{JWT} es un estándar abierto (RFC 7519) que define una forma compacta y autocontenida de transmitir información de forma segura entre partes como un objeto JSON.
+
+\textbf{Estructura de un JWT}
+
+Un JWT consta de tres partes separadas por puntos:
+
+\begin{verbatim}
+xxxxx.yyyyy.zzzzz
+Header.Payload.Signature
+\end{verbatim}
+
+\textbf{1. Header (Encabezado)}
+\begin{lstlisting}[language=json]
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+\end{lstlisting}
+
+Especifica el algoritmo de firma y el tipo de token.
+
+\textbf{2. Payload (Carga útil)}
+\begin{lstlisting}[language=json]
+{
+  "userId": "1",
+  "username": "admin",
+  "rol": "ADMIN",
+  "iat": 1768222999,
+  "exp": 1768309399
+}
+\end{lstlisting}
+
+Contiene los \textit{claims} (afirmaciones) sobre el usuario y metadata.
+
+\textbf{3. Signature (Firma)}
+\begin{verbatim}
+HMACSHA256(
+  base64UrlEncode(header) + "." +
+  base64UrlEncode(payload),
+  secret
+)
+\end{verbatim}
+
+Garantiza que el token no ha sido alterado.
+
+\subsubsection{Flujo de Autenticación JWT}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Login}: Usuario envía credenciales al servidor
+    \item \textbf{Validación}: Servidor verifica username y password
+    \item \textbf{Generación}: Servidor genera JWT firmado
+    \item \textbf{Respuesta}: Servidor envía JWT al cliente
+    \item \textbf{Almacenamiento}: Cliente guarda JWT (localStorage)
+    \item \textbf{Peticiones}: Cliente incluye JWT en header Authorization
+    \item \textbf{Verificación}: Servidor valida JWT en cada petición
+    \item \textbf{Acceso}: Si JWT válido, servidor procesa la petición
+\end{enumerate}
+
+\subsubsection{Ventajas de JWT}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Stateless}: No requiere sesiones en servidor
+    \item \textbf{Escalable}: Funciona en arquitecturas distribuidas
+    \item \textbf{Autocontenido}: Toda la información está en el token
+    \item \textbf{Cross-Domain}: Funciona entre diferentes dominios
+    \item \textbf{Performance}: Menos consultas a base de datos
+\end{itemize}
+
+\subsubsection{Seguridad en JWT}
+
+\textbf{Hash de Contraseñas con bcrypt}
+
+bcrypt es un algoritmo de hash diseñado específicamente para contraseñas:
+\begin{itemize}
+    \item Incorpora un \textit{salt} aleatorio
+    \item Computacionalmente costoso (protege contra fuerza bruta)
+    \item Ajustable en complejidad (work factor)
+\end{itemize}
+
+En nuestro sistema usamos 10 \textit{salt rounds}, balance entre seguridad y performance.
+
+\textbf{Control de Acceso Basado en Roles (RBAC)}
+
+Implementamos tres roles:
+\begin{itemize}
+    \item \textbf{ADMIN}: Acceso total al sistema
+    \item \textbf{SUPERVISOR}: Gestión de operaciones en su mina
+    \item \textbf{OPERADOR}: Registro de operaciones básicas
+\end{itemize}
+
+\newpage
+
+% ========================================
+% ARQUITECTURA IMPLEMENTADA
+% ========================================
+\section{Arquitectura Implementada}
+
+\subsection{Vista General del Sistema}
+
+El sistema ha sido rediseñado siguiendo una arquitectura de microservicios con dos servicios principales que se comunican mediante APIs REST:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    box/.style={rectangle, draw, fill=azulunsa!20, text width=6cm, align=center, minimum height=1cm},
+    arrow/.style={->, >=stealth, thick}
+]
+    % Usuario
+    \node[box, fill=doradounsa!30] (usuario) {Usuario (Navegador Web)};
+
+    % Frontend
+    \node[box, below=of usuario] (frontend) {
+        \textbf{Frontend Microservice}\\
+        Puerto 3000\\
+        Express + Proxy
+    };
+
+    % Backend
+    \node[box, below=of frontend] (backend) {
+        \textbf{Backend Microservice}\\
+        Puerto 4000\\
+        API REST + Lógica de Negocio
+    };
+
+    % Base de datos (futuro)
+    \node[box, below=of backend, fill=gray!20] (db) {
+        Base de Datos\\
+        (Futuro: PostgreSQL)
+    };
+
+    % Flechas
+    \draw[arrow] (usuario) -- node[right] {HTTP} (frontend);
+    \draw[arrow] (frontend) -- node[right] {HTTP REST + JWT} (backend);
+    \draw[arrow] (backend) -- node[right] {Queries} (db);
+\end{tikzpicture}
+\caption{Arquitectura general del sistema}
+\end{figure}
+
+\subsection{Frontend Microservice}
+
+\subsubsection{Responsabilidades}
+
+El microservicio de frontend tiene las siguientes responsabilidades:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Servir archivos estáticos}: HTML, CSS, JavaScript
+    \item \textbf{Proxy transparente}: Redirigir peticiones API al backend
+    \item \textbf{Gestión de sesión}: Almacenar y validar JWT
+    \item \textbf{Interfaz de usuario}: Proporcionar la UI al usuario final
+\end{enumerate}
+
+\subsubsection{Componentes}
+
+\textbf{1. Servidor Express}
+
+Servidor Node.js que sirve archivos estáticos:
+\begin{itemize}
+    \item Puerto: 3000
+    \item Framework: Express.js
+    \item Lenguaje: TypeScript
+\end{itemize}
+
+\textbf{2. HTTP Proxy Middleware}
+
+Componente que intercepta peticiones a \texttt{/api/*} y las redirige al backend:
+\begin{itemize}
+    \item Intercepta: \texttt{/api/*}
+    \item Redirige a: \texttt{http://localhost:4000/api/*}
+    \item Transparencia: El cliente no conoce el backend real
+\end{itemize}
+
+\textbf{3. Archivos Estáticos}
+
+\begin{itemize}
+    \item \texttt{index.html}: Página principal de la aplicación
+    \item \texttt{login.html}: Página de inicio de sesión
+    \item \texttt{config.js}: Configuración de endpoints
+    \item \texttt{auth.service.js}: Servicio de autenticación
+    \item \texttt{app.js}: Lógica de aplicación cliente
+\end{itemize}
+
+\subsubsection{Flujo de Petición}
+
+\begin{enumerate}[leftmargin=*]
+    \item Usuario realiza acción en la UI
+    \item JavaScript ejecuta \texttt{fetch('/api/equipos')}
+    \item Petición llega al servidor Express (puerto 3000)
+    \item Proxy middleware intercepta \texttt{/api/*}
+    \item Proxy agrega JWT del localStorage
+    \item Proxy redirige a \texttt{http://localhost:4000/api/equipos}
+    \item Backend procesa y responde
+    \item Proxy devuelve respuesta al cliente
+    \item JavaScript actualiza la UI
+\end{enumerate}
+
+\subsection{Backend Microservice}
+
+\subsubsection{Arquitectura en Capas}
+
+El backend implementa Clean Architecture con cuatro capas claramente definidas:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    layer/.style={rectangle, draw, fill=azulunsa!20, text width=10cm, minimum height=1.5cm, align=center},
+    node distance=0.2cm
+]
+    \node[layer, fill=azulunsa!10] (pres) {\textbf{Presentación}\\Controllers, Routes, Middleware};
+    \node[layer, below=of pres, fill=azulunsa!20] (app) {\textbf{Aplicación}\\Casos de Uso, DTOs, Orquestación};
+    \node[layer, below=of app, fill=azulunsa!30] (dom) {\textbf{Dominio}\\Entidades, Agregados, Servicios, Interfaces};
+    \node[layer, below=of dom, fill=azulunsa!40] (inf) {\textbf{Infraestructura}\\Repositorios, BD, APIs Externas};
+
+    % Flechas de dependencia
+    \draw[->, >=stealth, thick] (pres.south) -- (app.north);
+    \draw[->, >=stealth, thick] (app.south) -- (dom.north);
+    \draw[->, >=stealth, thick, dashed] (inf.north) to[out=180,in=180] (dom.south);
+\end{tikzpicture}
+\caption{Capas del Backend Microservice}
+\end{figure}
+
+\subsubsection{Capa de Dominio}
+
+\textbf{Bounded Context: Monitoreo}
+
+Gestiona todo lo relacionado con equipos mineros:
+
+\begin{lstlisting}[language=Java, caption=Estructura del contexto Monitoreo]
+Monitoreo/
+├── modelo/
+│   ├── Equipo (Aggregate Root)
+│   ├── Volquete (Entity)
+│   ├── Excavadora (Entity)
+│   ├── EstadoEquipo (Value Object)
+│   └── UbicacionGPS (Value Object)
+├── servicios/
+│   └── MonitoreoServiciosDominio
+└── interfacesRepositorio/
+    └── IEquipoRepositorio
+\end{lstlisting}
+
+\textbf{Aggregate Root: Equipo}
+
+El equipo es el agregado raíz que encapsula:
+\begin{itemize}
+    \item Identificación única
+    \item Estado operacional
+    \item Ubicación GPS
+    \item Tipo de equipo
+    \item Reglas de negocio para cambios de estado
+\end{itemize}
+
+\textbf{Bounded Context: Usuarios}
+
+Gestiona autenticación y autorización:
+
+\begin{lstlisting}[language=Java, caption=Estructura del contexto Usuarios]
+Usuarios/
+├── modelo/
+│   ├── Usuario (Aggregate Root)
+│   ├── Operador (Entity)
+│   └── Supervisor (Entity)
+├── servicios/
+│   └── PasswordServicio
+└── interfacesRepositorio/
+    └── IUsuarioRepositorio
+\end{lstlisting}
+
+\textbf{Entidad: Usuario}
+
+Características del agregado Usuario:
+\begin{itemize}
+    \item Identificador único
+    \item Credenciales (username, password hasheado)
+    \item Rol (ADMIN, SUPERVISOR, OPERADOR)
+    \item Estado (activo/inactivo)
+    \item Validaciones de negocio
+    \item Métodos: registrarAcceso(), cambiarPassword()
+\end{itemize}
+
+\subsubsection{Capa de Aplicación}
+
+Implementa los casos de uso del sistema:
+
+\textbf{Casos de Uso de Equipos}
+\begin{itemize}
+    \item \textbf{CrearEquipo}: Valida y crea un nuevo equipo
+    \item \textbf{ObtenerEquipos}: Lista equipos con filtros opcionales
+    \item \textbf{ActualizarEstadoEquipo}: Cambia el estado operacional
+\end{itemize}
+
+\textbf{Casos de Uso de Autenticación}
+\begin{itemize}
+    \item \textbf{Login}: Valida credenciales y genera JWT
+    \item \textbf{Register}: Registra un nuevo usuario
+\end{itemize}
+
+\textbf{Ejemplo: Caso de Uso Login}
+
+Flujo interno del caso de uso:
+\begin{enumerate}
+    \item Validar que username y password estén presentes
+    \item Buscar usuario por username en repositorio
+    \item Si no existe, retornar error
+    \item Verificar si usuario está activo
+    \item Comparar password con hash usando bcrypt
+    \item Si no coincide, retornar error
+    \item Registrar último acceso del usuario
+    \item Generar JWT con información del usuario
+    \item Retornar token y datos del usuario
+\end{enumerate}
+
+\subsubsection{Capa de Infraestructura}
+
+\textbf{Repositorios en Memoria}
+
+Actualmente implementamos repositorios en memoria para desarrollo:
+
+\begin{itemize}
+    \item \textbf{MemoriaEquipoRepositorio}
+    \begin{itemize}
+        \item Almacena equipos en Map<id, Equipo>
+        \item Proporciona equipos demo al iniciar
+        \item Implementa IEquipoRepositorio
+    \end{itemize}
+
+    \item \textbf{MemoriaUsuarioRepositorio}
+    \begin{itemize}
+        \item Almacena usuarios en Map<id, Usuario>
+        \item Índices por username y email
+        \item Usuarios por defecto: admin, supervisor1, operador1
+        \item Implementa IUsuarioRepositorio
+    \end{itemize}
+\end{itemize}
+
+\textbf{Migración Futura a Base de Datos}
+
+Gracias a la inversión de dependencias, la migración será transparente:
+\begin{enumerate}
+    \item Crear PrismaUsuarioRepositorio (implementa IUsuarioRepositorio)
+    \item Cambiar inyección de dependencias
+    \item El dominio y aplicación no cambian
+\end{enumerate}
+
+\subsubsection{Capa de Presentación}
+
+\textbf{Controllers}
+
+Los controladores manejan las peticiones HTTP:
+
+\begin{itemize}
+    \item \textbf{AuthController}
+    \begin{itemize}
+        \item \texttt{login()}: POST /api/auth/login
+        \item \texttt{register()}: POST /api/auth/register
+        \item \texttt{me()}: GET /api/auth/me
+        \item \texttt{logout()}: POST /api/auth/logout
+    \end{itemize}
+
+    \item \textbf{EquipoController}
+    \begin{itemize}
+        \item \texttt{crear()}: POST /api/equipos
+        \item \texttt{listar()}: GET /api/equipos
+        \item \texttt{obtenerPorId()}: GET /api/equipos/:id
+    \end{itemize}
+\end{itemize}
+
+\textbf{Middleware de Autenticación}
+
+El \texttt{AuthMiddleware} proporciona tres métodos:
+
+\begin{enumerate}
+    \item \textbf{requireAuth}: Valida que exista JWT válido
+    \begin{itemize}
+        \item Extrae token del header Authorization
+        \item Verifica formato "Bearer <token>"
+        \item Valida firma y expiración con jsonwebtoken
+        \item Adjunta datos del usuario a req.user
+        \item Si inválido, retorna 401 Unauthorized
+    \end{itemize}
+
+    \item \textbf{requireRole}: Valida rol específico
+    \begin{itemize}
+        \item Primero ejecuta requireAuth
+        \item Verifica que req.user.rol esté en roles permitidos
+        \item Si no autorizado, retorna 403 Forbidden
+    \end{itemize}
+
+    \item \textbf{optionalAuth}: JWT opcional
+    \begin{itemize}
+        \item Si hay token, lo valida
+        \item Si no hay token, continúa sin error
+        \item Útil para endpoints públicos con funcionalidad extra si autenticado
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Comunicación entre Microservicios}
+
+\subsubsection{Protocolo REST}
+
+Los microservicios se comunican mediante HTTP REST:
+
+\textbf{Características de la API}
+\begin{itemize}
+    \item \textbf{Stateless}: Cada petición contiene toda la información necesaria
+    \item \textbf{Recursos}: Identificados por URIs (/api/equipos, /api/auth)
+    \item \textbf{Verbos HTTP}: GET, POST, PUT, DELETE
+    \item \textbf{Formato}: JSON para request y response
+    \item \textbf{Autenticación}: JWT en header Authorization
+\end{itemize}
+
+\textbf{Ejemplo de Petición Autenticada}
+
+\begin{lstlisting}[language=bash, caption=Petición GET con JWT]
+GET /api/equipos HTTP/1.1
+Host: localhost:4000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+\end{lstlisting}
+
+\textbf{Ejemplo de Respuesta}
+
+\begin{lstlisting}[language=json, caption=Respuesta JSON del backend]
+{
+  "success": true,
+  "data": [
+    {
+      "id": "uuid-1",
+      "codigo": "VOL-001",
+      "tipo": "VOLQUETE",
+      "estado": "DISPONIBLE"
+    }
+  ]
+}
+\end{lstlisting}
+
+\subsubsection{CORS (Cross-Origin Resource Sharing)}
+
+Para permitir la comunicación entre frontend (puerto 3000) y backend (puerto 4000), configuramos CORS:
+
+\textbf{Configuración en Backend}
+\begin{itemize}
+    \item \textbf{Access-Control-Allow-Origin}: Origen permitido
+    \item \textbf{Access-Control-Allow-Methods}: Métodos permitidos
+    \item \textbf{Access-Control-Allow-Headers}: Headers permitidos (incluye Authorization)
+    \item \textbf{Preflight}: Manejo de OPTIONS requests
+\end{itemize}
+
+\textbf{Seguridad en Producción}
+
+En desarrollo usamos \texttt{*} para permitir cualquier origen, pero en producción se debe especificar:
+\begin{itemize}
+    \item Dominios exactos permitidos
+    \item Credenciales específicas
+    \item Headers limitados
+\end{itemize}
+
+\subsection{Seguridad Implementada}
+
+\subsubsection{Autenticación JWT}
+
+\textbf{Generación de Token}
+
+Cuando un usuario inicia sesión:
+\begin{enumerate}
+    \item Backend valida credenciales
+    \item Backend genera payload con información del usuario
+    \item Backend firma el payload con clave secreta (JWT\_SECRET)
+    \item Backend retorna token al cliente
+\end{enumerate}
+
+\textbf{Validación de Token}
+
+En cada petición protegida:
+\begin{enumerate}
+    \item Middleware extrae token del header
+    \item Verifica firma usando la misma clave secreta
+    \item Verifica que no haya expirado
+    \item Extrae información del usuario del payload
+    \item Adjunta información a req.user
+\end{enumerate}
+
+\subsubsection{Hash de Contraseñas}
+
+\textbf{bcrypt}
+
+Utilizamos bcrypt con las siguientes características:
+
+\begin{itemize}
+    \item \textbf{Salt rounds}: 10 (balance seguridad/performance)
+    \item \textbf{Algoritmo}: Blowfish
+    \item \textbf{Output}: Hash de 60 caracteres
+    \item \textbf{Ventaja}: Cada hash es único gracias al salt
+\end{itemize}
+
+\textbf{Proceso de Hash}
+\begin{enumerate}
+    \item Usuario envía contraseña en texto plano
+    \item Backend genera salt aleatorio
+    \item Backend aplica 2$^{10}$ iteraciones de Blowfish
+    \item Backend almacena hash resultante
+    \item Contraseña original nunca se almacena
+\end{enumerate}
+
+\textbf{Proceso de Verificación}
+\begin{enumerate}
+    \item Usuario envía contraseña en texto plano
+    \item Backend obtiene hash almacenado
+    \item bcrypt extrae salt del hash
+    \item bcrypt aplica mismo proceso con salt extraído
+    \item Compara hash generado con hash almacenado
+\end{enumerate}
+
+\subsubsection{Control de Acceso Basado en Roles}
+
+\textbf{Roles Implementados}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Rol} & \textbf{Permisos} \\
+\hline
+ADMIN &
+\begin{itemize}[leftmargin=*]
+    \item Acceso total al sistema
+    \item Gestión de usuarios
+    \item Configuración del sistema
+    \item Acceso a todas las minas
+\end{itemize} \\
+\hline
+SUPERVISOR &
+\begin{itemize}[leftmargin=*]
+    \item Gestión de operaciones en su mina
+    \item Supervisión de equipos
+    \item Generación de reportes
+    \item Asignación de tareas
+\end{itemize} \\
+\hline
+OPERADOR &
+\begin{itemize}[leftmargin=*]
+    \item Registro de operaciones
+    \item Visualización de equipos
+    \item Consulta de información
+    \item Reporte de incidencias
+\end{itemize} \\
+\hline
+\end{tabular}
+\caption{Roles y permisos del sistema}
+\end{table}
+
+\textbf{Protección de Rutas}
+
+Ejemplo de ruta protegida con rol específico:
+
+\begin{lstlisting}[language=javascript, caption=Protección con requireRole]
+// Solo ADMIN puede acceder
+router.post('/api/usuarios',
+    authMiddleware.requireAuth,
+    authMiddleware.requireRole('ADMIN'),
+    usuariosController.crear
+);
+
+// ADMIN o SUPERVISOR pueden acceder
+router.get('/api/reportes',
+    authMiddleware.requireAuth,
+    authMiddleware.requireRole(['ADMIN', 'SUPERVISOR']),
+    reportesController.generar
+);
+\end{lstlisting}
+
+\newpage
+
+% ========================================
+% IMPLEMENTACIÓN TÉCNICA
+% ========================================
+\section{Implementación Técnica}
+
+\subsection{Tecnologías Utilizadas}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|p{7cm}|}
+\hline
+\textbf{Categoría} & \textbf{Tecnología} & \textbf{Uso} \\
+\hline
+\multirow{3}{*}{Runtime} & Node.js 18+ & Entorno de ejecución \\
+& npm & Gestor de paquetes \\
+& TypeScript & Lenguaje de programación \\
+\hline
+\multirow{2}{*}{Backend} & Express.js & Framework web \\
+& bcrypt & Hash de contraseñas \\
+& jsonwebtoken & Generación y validación JWT \\
+& dotenv & Variables de entorno \\
+\hline
+\multirow{2}{*}{Frontend} & Express.js & Servidor estático \\
+& http-proxy-middleware & Proxy de peticiones \\
+\hline
+\multirow{3}{*}{Infraestructura} & Docker & Containerización \\
+& Docker Compose & Orquestación \\
+& Multi-stage builds & Optimización de imágenes \\
+\hline
+Testing & Jest & Framework de pruebas \\
+\hline
+Build & Grunt & Automatización de tareas \\
+\hline
+\end{tabular}
+\caption{Stack tecnológico del proyecto}
+\end{table}
+
+\subsection{Estructura de Directorios}
+
+\begin{lstlisting}[caption=Estructura completa del proyecto]
+sistema-monitoreo/
+│
+├── frontend/                    # Microservicio Frontend
+│   ├── src/
+│   │   └── server.ts           # Servidor Express + Proxy
+│   ├── public/
+│   │   ├── index.html          # Aplicación principal
+│   │   ├── login.html          # Página de login
+│   │   └── js/
+│   │       ├── config.js       # Configuración
+│   │       ├── auth.service.js # Servicio de autenticación
+│   │       └── app.js          # Lógica cliente
+│   ├── Dockerfile
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── backend/                     # Microservicio Backend
+│   ├── aplicacion/
+│   │   ├── Dominio/            # Capa de Dominio
+│   │   │   ├── monitoreo/
+│   │   │   │   ├── modelo/
+│   │   │   │   ├── servicios/
+│   │   │   │   └── interfacesRepositorio/
+│   │   │   ├── operaciones/
+│   │   │   └── usuarios/
+│   │   │       ├── modelo/
+│   │   │       │   └── usuario.ts
+│   │   │       ├── servicios/
+│   │   │       │   └── passwordServicio.ts
+│   │   │       └── interfacesRepositorio/
+│   │   │
+│   │   ├── casos-uso/          # Capa de Aplicación
+│   │   │   ├── equipos/
+│   │   │   ├── operaciones/
+│   │   │   └── auth/
+│   │   │       ├── Login.ts
+│   │   │       └── Register.ts
+│   │   │
+│   │   └── infraestructura/    # Capa de Infraestructura
+│   │       └── persistencia/
+│   │           └── repositorios/
+│   │               ├── MemoriaEquipoRepositorio.ts
+│   │               └── MemoriaUsuarioRepositorio.ts
+│   │
+│   ├── presentacion/            # Capa de Presentación
+│   │   ├── api/
+│   │   │   ├── controllers/
+│   │   │   │   ├── AuthController.ts
+│   │   │   │   └── EquipoController.ts
+│   │   │   ├── middleware/
+│   │   │   │   └── authMiddleware.ts
+│   │   │   └── routes/
+│   │   │       ├── auth.routes.ts
+│   │   │       └── equipos.routes.ts
+│   │   └── index.ts
+│   │
+│   ├── app.ts                   # Punto de entrada
+│   ├── Dockerfile
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── docker-compose.yml           # Orquestación
+├── Doc/
+│   ├── ARQUITECTURA-MICROSERVICIOS.md
+│   ├── AUTENTICACION-JWT.md
+│   └── INFORME-PRACTICA-07.tex
+└── README.md
+\end{lstlisting}
+
+\subsection{Configuración de Docker}
+
+\subsubsection{Dockerfile Frontend}
+
+Utilizamos multi-stage build para optimizar la imagen:
+
+\textbf{Stage 1: Build}
+\begin{itemize}
+    \item Instala dependencias
+    \item Compila TypeScript a JavaScript
+    \item Optimiza código
+\end{itemize}
+
+\textbf{Stage 2: Production}
+\begin{itemize}
+    \item Copia solo archivos necesarios
+    \item Instala solo dependencias de producción
+    \item Usuario no privilegiado
+    \item Imagen final más pequeña
+\end{itemize}
+
+\subsubsection{Dockerfile Backend}
+
+Similar al frontend, con tres stages:
+
+\textbf{Stage 1: Dependencies}
+\begin{itemize}
+    \item Instala todas las dependencias
+    \item Cacheado eficiente de node\_modules
+\end{itemize}
+
+\textbf{Stage 2: Builder}
+\begin{itemize}
+    \item Compila TypeScript
+    \item Ejecuta Grunt build:docker
+    \item Genera directorio dist/
+\end{itemize}
+
+\textbf{Stage 3: Production}
+\begin{itemize}
+    \item Copia dist/ compilado
+    \item Solo dependencias de producción
+    \item Usuario no privilegiado
+\end{itemize}
+
+\subsubsection{Docker Compose}
+
+Orquesta ambos servicios:
+
+\begin{lstlisting}[language=yaml, caption=docker-compose.yml]
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+\end{lstlisting}
+
+\textbf{Características}
+\begin{itemize}
+    \item \textbf{depends\_on}: Frontend espera que backend esté listo
+    \item \textbf{healthcheck}: Verifica que servicios estén saludables
+    \item \textbf{environment}: Variables de entorno inyectadas
+    \item \textbf{ports}: Mapeo de puertos host:container
+\end{itemize}
+
+\subsection{Flujos de Ejecución Detallados}
+
+\subsubsection{Flujo de Login Completo}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    every node/.style={font=\small},
+    box/.style={rectangle, draw, fill=azulunsa!20, text width=3cm, align=center, minimum height=0.8cm},
+    arrow/.style={->, >=stealth, thick}
+]
+    \node[box] (user) {Usuario};
+    \node[box, below=of user] (ui) {login.html};
+    \node[box, below=of ui] (authsvc) {AuthService};
+    \node[box, below=of authsvc] (proxy) {Proxy};
+    \node[box, below=of proxy] (ctrl) {AuthController};
+    \node[box, below=of ctrl] (usecase) {Login UseCase};
+    \node[box, below=of usecase] (repo) {Repository};
+
+    \draw[arrow] (user) -- node[right] {1. Envía credenciales} (ui);
+    \draw[arrow] (ui) -- node[right] {2. login()} (authsvc);
+    \draw[arrow] (authsvc) -- node[right] {3. POST /api/auth/login} (proxy);
+    \draw[arrow] (proxy) -- node[right] {4. Redirige} (ctrl);
+    \draw[arrow] (ctrl) -- node[right] {5. ejecutar()} (usecase);
+    \draw[arrow] (usecase) -- node[right] {6. buscarPorUsername()} (repo);
+    \draw[arrow] (repo) -- node[left] {7. Usuario} (usecase);
+    \draw[arrow] (usecase) -- node[left] {8. JWT + Usuario} (ctrl);
+    \draw[arrow] (ctrl) -- node[left] {9. JSON Response} (proxy);
+    \draw[arrow] (proxy) -- node[left] {10. Retorna} (authsvc);
+    \draw[arrow] (authsvc) -- node[left] {11. Guarda token} (ui);
+    \draw[arrow] (ui) -- node[left] {12. Redirige a /} (user);
+\end{tikzpicture}
+\caption{Secuencia completa del flujo de login}
+\end{figure}
+
+\textbf{Pasos Detallados}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Usuario ingresa credenciales}: Username y password en formulario
+
+    \item \textbf{Evento submit}: JavaScript captura evento y previene submit default
+
+    \item \textbf{Validación frontend}: Verifica campos no vacíos
+
+    \item \textbf{Llamada a AuthService}:
+    \begin{verbatim}
+    AuthService.login('admin', 'Admin123!')
+    \end{verbatim}
+
+    \item \textbf{Fetch API}: Petición POST a /api/auth/login
+
+    \item \textbf{Proxy intercepta}: Redirige a backend:4000
+
+    \item \textbf{CORS Middleware}: Valida origen y headers
+
+    \item \textbf{Router}: Mapea a AuthController.login()
+
+    \item \textbf{Controller}: Extrae username y password del body
+
+    \item \textbf{Caso de Uso Login}:
+    \begin{itemize}
+        \item Busca usuario por username
+        \item Verifica estado activo
+        \item Compara password con bcrypt
+        \item Registra último acceso
+        \item Genera JWT
+    \end{itemize}
+
+    \item \textbf{Repository}: Consulta Map en memoria
+
+    \item \textbf{Generación JWT}:
+    \begin{verbatim}
+    jwt.sign(payload, JWT_SECRET, {
+        expiresIn: '24h',
+        issuer: 'sistema-monitoreo-api',
+        audience: 'sistema-monitoreo-frontend'
+    })
+    \end{verbatim}
+
+    \item \textbf{Response JSON}: Retorna token y datos usuario
+
+    \item \textbf{AuthService guarda}:
+    \begin{verbatim}
+    localStorage.setItem('auth_token', token)
+    localStorage.setItem('auth_user', JSON.stringify(usuario))
+    \end{verbatim}
+
+    \item \textbf{Redirección}: window.location.href = '/'
+
+    \item \textbf{Página principal carga}: Verifica autenticación con requireAuth()
+\end{enumerate}
+
+\subsubsection{Flujo de Petición Autenticada}
+
+Ejemplo: Crear un equipo
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Usuario completa formulario}: Código "VOL-001", Tipo "VOLQUETE"
+
+    \item \textbf{Submit evento}: JavaScript captura y previene default
+
+    \item \textbf{Llamada apiRequest}:
+    \begin{verbatim}
+    apiRequest('/api/equipos', {
+        method: 'POST',
+        body: JSON.stringify({codigo: 'VOL-001', tipo: 'VOLQUETE'})
+    })
+    \end{verbatim}
+
+    \item \textbf{apiRequest agrega JWT}:
+    \begin{verbatim}
+    const token = AuthService.getToken()
+    headers['Authorization'] = `Bearer ${token}`
+    \end{verbatim}
+
+    \item \textbf{Fetch con JWT}: Petición incluye header Authorization
+
+    \item \textbf{Proxy redirige}: A backend:4000/api/equipos
+
+    \item \textbf{AuthMiddleware.requireAuth}:
+    \begin{itemize}
+        \item Extrae token: req.headers.authorization
+        \item Verifica formato: "Bearer <token>"
+        \item Valida JWT: jwt.verify(token, JWT\_SECRET)
+        \item Adjunta usuario: req.user = decoded
+        \item Llama next()
+    \end{itemize}
+
+    \item \textbf{Router}: Mapea a EquipoController.crear()
+
+    \item \textbf{Controller}:
+    \begin{itemize}
+        \item Extrae datos del body
+        \item Accede a req.user.userId (quien crea)
+        \item Llama caso de uso CrearEquipo
+    \end{itemize}
+
+    \item \textbf{Caso de Uso CrearEquipo}:
+    \begin{itemize}
+        \item Valida código único
+        \item Valida tipo válido
+        \item Crea entidad Equipo
+        \item Guarda en repositorio
+    \end{itemize}
+
+    \item \textbf{Repository}: Persiste en Map<id, Equipo>
+
+    \item \textbf{Response}:
+    \begin{verbatim}
+    {
+        "success": true,
+        "message": "Equipo creado exitosamente",
+        "data": {...}
+    }
+    \end{verbatim}
+
+    \item \textbf{Frontend}:
+    \begin{itemize}
+        \item Recibe response
+        \item Actualiza DOM
+        \item Muestra mensaje éxito
+        \item Limpia formulario
+        \item Recarga lista de equipos
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Validación y Testing}
+
+\subsubsection{Pruebas Manuales Realizadas}
+
+\textbf{1. Login Exitoso}
+\begin{verbatim}
+$ curl -X POST http://localhost:4000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"Admin123!"}'
+
+Response:
+{
+  "success": true,
+  "message": "Login exitoso",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "usuario": {
+    "id": "1",
+    "username": "admin",
+    "email": "admin@minera.com",
+    "rol": "ADMIN"
+  }
+}
+\end{verbatim}
+
+\textbf{2. Login Fallido}
+\begin{verbatim}
+$ curl -X POST http://localhost:4000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"wrong"}'
+
+Response:
+{
+  "success": false,
+  "message": "Credenciales inválidas"
+}
+\end{verbatim}
+
+\textbf{3. Petición Autenticada}
+\begin{verbatim}
+$ curl -X GET http://localhost:4000/api/auth/me \
+  -H "Authorization: Bearer <TOKEN>"
+
+Response:
+{
+  "success": true,
+  "usuario": {
+    "userId": "1",
+    "username": "admin",
+    "email": "admin@minera.com",
+    "rol": "ADMIN"
+  }
+}
+\end{verbatim}
+
+\textbf{4. Petición sin Token}
+\begin{verbatim}
+$ curl -X GET http://localhost:4000/api/equipos
+
+Response:
+{
+  "success": false,
+  "message": "No se proporcionó token de autenticación"
+}
+\end{verbatim}
+
+\subsubsection{Healthchecks}
+
+Ambos servicios exponen endpoints de salud:
+
+\begin{verbatim}
+$ curl http://localhost:3000/health
+{
+  "status": "OK",
+  "service": "frontend-microservice",
+  "timestamp": "2026-01-12T13:00:00.000Z"
+}
+
+$ curl http://localhost:4000/health
+{
+  "status": "OK",
+  "service": "backend-microservice",
+  "timestamp": "2026-01-12T13:00:00.000Z"
+}
+\end{verbatim}
+
+\newpage
+
+% ========================================
+% DESPLIEGUE Y EJECUCIÓN
+% ========================================
+\section{Despliegue y Ejecución}
+
+\subsection{Requisitos Previos}
+
+\begin{itemize}[leftmargin=*]
+    \item Node.js 18 o superior
+    \item npm 9 o superior
+    \item Docker 20 o superior (opcional)
+    \item Docker Compose 2 o superior (opcional)
+    \item Git
+\end{itemize}
+
+\subsection{Opción 1: Desarrollo Local}
+
+\subsubsection{Backend}
+
+\begin{verbatim}
+# Clonar repositorio
+$ git clone <repository-url>
+$ cd sistema-monitoreo/backend
+
+# Instalar dependencias
+$ npm install
+
+# Configurar variables de entorno
+$ cp .env.example .env
+$ nano .env  # Editar JWT_SECRET
+
+# Ejecutar en modo desarrollo
+$ npm run dev
+
+# Output esperado:
+📦 MemoriaUsuarioRepositorio inicializado
+✅ 3 usuarios por defecto creados
+   - admin / Admin123! (ADMIN)
+   - supervisor1 / Super123! (SUPERVISOR)
+   - operador1 / Opera123! (OPERADOR)
+🔧 ==========================================
+   BACKEND MICROSERVICE INICIADO
+🔧 ==========================================
+🌐 API Base: http://localhost:4000
+\end{verbatim}
+
+\subsubsection{Frontend}
+
+\begin{verbatim}
+# En otra terminal
+$ cd sistema-monitoreo/frontend
+
+# Instalar dependencias
+$ npm install
+
+# Ejecutar en modo desarrollo
+$ npm run dev
+
+# Output esperado:
+✅ Frontend Microservice iniciado
+🌐 Servidor: http://localhost:3000
+🔗 API Backend: http://localhost:4000
+🛣️ Proxy configurado: /api/* -> http://localhost:4000/api/*
+\end{verbatim}
+
+\subsubsection{Acceso}
+
+\begin{itemize}
+    \item \textbf{Aplicación Web}: \url{http://localhost:3000}
+    \item \textbf{Login}: \url{http://localhost:3000/login.html}
+    \item \textbf{Backend API}: \url{http://localhost:4000}
+    \item \textbf{Health Frontend}: \url{http://localhost:3000/health}
+    \item \textbf{Health Backend}: \url{http://localhost:4000/health}
+\end{itemize}
+
+\subsection{Opción 2: Docker Compose (Recomendado)}
+
+\subsubsection{Construcción y Ejecución}
+
+\begin{verbatim}
+# Desde la raíz del proyecto
+$ docker-compose up --build
+
+# En modo detached (background)
+$ docker-compose up -d --build
+
+# Ver logs en tiempo real
+$ docker-compose logs -f
+
+# Ver logs de un servicio específico
+$ docker-compose logs -f backend
+$ docker-compose logs -f frontend
+
+# Ver estado de contenedores
+$ docker-compose ps
+
+# Output esperado:
+NAME                   IMAGE                        STATUS
+backend-microservice   sistema-monitoreo-backend    Up (healthy)
+frontend-microservice  sistema-monitoreo-frontend   Up (healthy)
+\end{verbatim}
+
+\subsubsection{Gestión de Servicios}
+
+\begin{verbatim}
+# Detener servicios (mantiene volúmenes)
+$ docker-compose stop
+
+# Iniciar servicios detenidos
+$ docker-compose start
+
+# Detener y eliminar contenedores
+$ docker-compose down
+
+# Detener y eliminar contenedores + volúmenes
+$ docker-compose down -v
+
+# Reconstruir un servicio específico
+$ docker-compose up --build backend
+
+# Ejecutar comando en contenedor
+$ docker-compose exec backend sh
+$ docker-compose exec frontend npm run test
+\end{verbatim}
+
+\subsubsection{Troubleshooting Docker}
+
+\textbf{Problema: Puerto en uso}
+\begin{verbatim}
+Error: bind: address already in use
+Solución:
+$ docker-compose down
+$ lsof -ti:3000 | xargs kill -9
+$ lsof -ti:4000 | xargs kill -9
+$ docker-compose up
+\end{verbatim}
+
+\textbf{Problema: Cambios no se reflejan}
+\begin{verbatim}
+Solución:
+$ docker-compose down
+$ docker-compose build --no-cache
+$ docker-compose up
+\end{verbatim}
+
+\subsection{Variables de Entorno}
+
+\subsubsection{Backend (.env)}
+
+\begin{verbatim}
+# Puerto del servidor
+PORT=4000
+
+# JWT Configuration
+JWT_SECRET=tu_clave_secreta_minimo_32_caracteres_segura
+JWT_EXPIRES_IN=24h
+
+# Entorno
+NODE_ENV=development
+
+# Base de datos (futuro)
+# DATABASE_URL=postgresql://user:pass@localhost:5432/minero
+\end{verbatim}
+
+\textbf{Generar JWT\_SECRET Seguro}
+\begin{verbatim}
+$ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+Output:
+a7f3e9b2c1d4f8a6e5b9c3d7f1a8e4b6c9d2f5a7e3b8c4d9f2a6e1b7c5d3f9a
+\end{verbatim}
+
+\subsubsection{Frontend (.env)}
+
+\begin{verbatim}
+# Puerto del servidor
+PORT=3000
+
+# URL del backend
+BACKEND_URL=http://localhost:4000
+
+# Entorno
+NODE_ENV=development
+\end{verbatim}
+
+\subsection{Usuarios de Prueba}
+
+El sistema inicializa automáticamente tres usuarios:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Username} & \textbf{Password} & \textbf{Rol} & \textbf{Email} \\
+\hline
+admin & Admin123! & ADMIN & admin@minera.com \\
+supervisor1 & Super123! & SUPERVISOR & supervisor@minera.com \\
+operador1 & Opera123! & OPERADOR & operador@minera.com \\
+\hline
+\end{tabular}
+\caption{Credenciales de usuarios de prueba}
+\end{table}
+
+\textbf{Ejemplo de Login}
+\begin{enumerate}
+    \item Abrir \url{http://localhost:3000/login.html}
+    \item Ingresar: admin / Admin123!
+    \item Click en "Iniciar Sesión"
+    \item Redirección automática a aplicación principal
+\end{enumerate}
+
+\newpage
+
+% ========================================
+% VALIDACIÓN DE REQUISITOS
+% ========================================
+\section{Validación de Requisitos de Práctica 07}
+
+\subsection{Checklist Completo}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|c|p{7cm}|c|p{4cm}|}
+\hline
+\textbf{\#} & \textbf{Requisito} & \textbf{Estado} & \textbf{Evidencia} \\
+\hline
+1 & Inspeccionar calidad con SonarQube & Pendiente & Por configurar \\
+\hline
+2 & Generar reporte de issues & Pendiente & Después de SonarQube \\
+\hline
+3 & Revisión manual de código & \textcolor{green}{✓} & Clean Code aplicado \\
+\hline
+4 & Entender lenguaje ubicuo & \textcolor{green}{✓} & Equipo, Operación, Estado \\
+\hline
+5 & Identificar módulos & \textcolor{green}{✓} & Monitoreo, Operaciones \\
+\hline
+6 & Definir modelo de dominio & \textcolor{green}{✓} & Agregados, Entidades \\
+\hline
+7 & Definir bounded contexts & \textcolor{green}{✓} & 3 contextos definidos \\
+\hline
+8 & Identificar dependencias & \textcolor{green}{✓} & Frontend $\rightarrow$ Backend \\
+\hline
+9 & Migrar a microservicios & \textcolor{green}{✓} & 2 microservicios \\
+\hline
+10 & Evaluar arquitectura & \textcolor{green}{✓} & Clean Arch + DDD \\
+\hline
+11 & \textbf{Desacoplar frontend-backend} & \textcolor{green}{✓} & \textbf{API RESTful} \\
+\hline
+12 & Implementar autenticación & \textcolor{green}{✓} & JWT completo \\
+\hline
+\end{tabular}
+\caption{Estado de cumplimiento de requisitos}
+\end{table}
+
+\subsection{Punto 11: Desacoplar Frontend del Backend}
+
+\subsubsection{Requisito Original}
+
+Del documento Pr7\_redesign.pdf, página 8:
+
+\begin{quote}
+\textit{"Conexión frontend-backend a través de comunicación API RESTful. La capa de presentación (UI) debe estar separada de la lógica de la aplicación y las capas de acceso a datos. Por medio de un API Gateway."}
+\end{quote}
+
+\subsubsection{Implementación Realizada}
+
+\textbf{1. Separación Física}
+
+\begin{itemize}
+    \item \textbf{Frontend}: Directorio \texttt{/frontend} independiente
+    \item \textbf{Backend}: Directorio \texttt{/backend} independiente
+    \item \textbf{Repositorios}: Bases de código separadas
+    \item \textbf{Despliegue}: Contenedores Docker independientes
+\end{itemize}
+
+\textbf{2. Comunicación API REST}
+
+\begin{itemize}
+    \item \textbf{Protocolo}: HTTP/1.1 con JSON
+    \item \textbf{Endpoints}:
+    \begin{itemize}
+        \item POST /api/auth/login
+        \item POST /api/auth/register
+        \item GET /api/auth/me
+        \item POST /api/equipos
+        \item GET /api/equipos
+    \end{itemize}
+    \item \textbf{Autenticación}: JWT Bearer en header Authorization
+\end{itemize}
+
+\textbf{3. Proxy como API Gateway}
+
+El frontend implementa un proxy simplificado que actúa como API Gateway:
+
+\begin{itemize}
+    \item Intercepta todas las peticiones a \texttt{/api/*}
+    \item Redirige transparentemente al backend
+    \item Maneja CORS automáticamente
+    \item Registra peticiones (logging)
+\end{itemize}
+
+\textbf{Ventajas del Proxy}
+\begin{itemize}
+    \item Cliente no conoce URL real del backend
+    \item Fácil cambiar backend en diferentes entornos
+    \item Centraliza configuración de comunicación
+    \item Base para implementar API Gateway completo
+\end{itemize}
+
+\subsubsection{Evidencia de Cumplimiento}
+
+\textbf{Código Frontend}
+\begin{lstlisting}[language=javascript]
+// frontend/public/js/app.js
+async function apiRequest(endpoint, options = {}) {
+    const url = `${CONFIG.API_BASE_URL}${endpoint}`;
+    const token = AuthService.getToken();
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(url, options);
+    return response.json();
+}
+
+// Uso
+const equipos = await apiRequest('/api/equipos');
+\end{lstlisting}
+
+\textbf{Configuración Proxy}
+\begin{lstlisting}[language=javascript]
+// frontend/src/server.ts
+this.app.use('/api', createProxyMiddleware({
+    target: 'http://localhost:4000',
+    changeOrigin: true,
+    onProxyReq: (proxyReq, req) => {
+        console.log(`Proxy: ${req.method} ${req.path}`);
+    }
+}));
+\end{lstlisting}
+
+\subsection{Punto 4: Separar Capa de Presentación}
+
+\subsubsection{Implementación}
+
+\textbf{Separación Lograda}
+
+\begin{enumerate}
+    \item \textbf{Capa de Presentación (Frontend)}
+    \begin{itemize}
+        \item Puerto 3000
+        \item Archivos HTML, CSS, JavaScript
+        \item Servidor Express estático
+        \item Proxy middleware
+    \end{itemize}
+
+    \item \textbf{Capa de Lógica (Backend - Aplicación)}
+    \begin{itemize}
+        \item Casos de uso
+        \item Orquestación de dominio
+        \item Validaciones de negocio
+    \end{itemize}
+
+    \item \textbf{Capa de Dominio (Backend)}
+    \begin{itemize}
+        \item Entidades y agregados
+        \item Servicios de dominio
+        \item Reglas de negocio
+    \end{itemize}
+
+    \item \textbf{Capa de Acceso a Datos (Backend - Infraestructura)}
+    \begin{itemize}
+        \item Repositorios
+        \item Implementaciones de persistencia
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Beneficios Obtenidos}
+
+\begin{itemize}
+    \item Desarrollo independiente de UI y lógica
+    \item Testing facilitado de cada capa
+    \item Posibilidad de múltiples frontends (web, mobile)
+    \item Cambios en UI no afectan lógica de negocio
+\end{itemize}
+
+\subsection{Bounded Contexts Implementados}
+
+\subsubsection{1. Bounded Context: Monitoreo}
+
+\textbf{Responsabilidad}: Gestión y monitoreo de equipos mineros
+
+\textbf{Modelo de Dominio}
+\begin{itemize}
+    \item \textbf{Aggregate Root}: Equipo
+    \item \textbf{Entities}: Volquete, Excavadora, Bulldozer
+    \item \textbf{Value Objects}: EstadoEquipo, UbicacionGPS
+    \item \textbf{Repository}: IEquipoRepositorio
+    \item \textbf{Domain Services}: MonitoreoServiciosDominio
+\end{itemize}
+
+\textbf{Lenguaje Ubicuo}
+\begin{itemize}
+    \item \textit{Equipo}: Maquinaria pesada utilizada en operaciones mineras
+    \item \textit{Estado}: Condición operacional (DISPONIBLE, EN\_OPERACION, EN\_MANTENIMIENTO)
+    \item \textit{Código}: Identificador único del equipo (ej: VOL-001)
+\end{itemize}
+
+\subsubsection{2. Bounded Context: Operaciones}
+
+\textbf{Responsabilidad}: Gestión de operaciones y ciclos de trabajo
+
+\textbf{Modelo de Dominio}
+\begin{itemize}
+    \item \textbf{Aggregate Root}: Operacion
+    \item \textbf{Entities}: Ciclo
+    \item \textbf{Repository}: IOperacionRepositorio
+    \item \textbf{Domain Services}: ServicioCalculoKPIs
+\end{itemize}
+
+\textbf{Lenguaje Ubicuo}
+\begin{itemize}
+    \item \textit{Operación}: Actividad realizada por un equipo
+    \item \textit{Ciclo}: Unidad completa de trabajo (carga → transporte → descarga)
+    \item \textit{KPI}: Indicadores de rendimiento operacional
+\end{itemize}
+
+\subsubsection{3. Bounded Context: Usuarios}
+
+\textbf{Responsabilidad}: Gestión de usuarios y control de acceso
+
+\textbf{Modelo de Dominio}
+\begin{itemize}
+    \item \textbf{Aggregate Root}: Usuario
+    \item \textbf{Entities}: Operador, Supervisor
+    \item \textbf{Value Objects}: Rol
+    \item \textbf{Repository}: IUsuarioRepositorio
+    \item \textbf{Domain Services}: PasswordServicio
+\end{itemize}
+
+\textbf{Lenguaje Ubicuo}
+\begin{itemize}
+    \item \textit{Usuario}: Persona con acceso al sistema
+    \item \textit{Rol}: Nivel de autorización (ADMIN, SUPERVISOR, OPERADOR)
+    \item \textit{Sesión}: Período de uso autenticado
+\end{itemize}
+
+\newpage
+
+% ========================================
+% CONCLUSIONES Y RECOMENDACIONES
+% ========================================
+\section{Conclusiones y Recomendaciones}
+
+\subsection{Logros Alcanzados}
+
+\subsubsection{Transformación Arquitectónica}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Migración Exitosa a Microservicios}
+
+    Se logró transformar exitosamente el sistema monolítico original en una arquitectura de microservicios moderna, separando claramente el frontend del backend. Esta separación ha resultado en:
+    \begin{itemize}
+        \item Mayor independencia de desarrollo
+        \item Posibilidad de despliegues independientes
+        \item Escalabilidad granular por servicio
+        \item Aislamiento de fallos
+    \end{itemize}
+
+    \item \textbf{Implementación Rigurosa de Clean Architecture}
+
+    El backend mantiene una separación clara de responsabilidades en cuatro capas, cumpliendo la regla de dependencias donde el código fluye siempre hacia el dominio. Esto facilita:
+    \begin{itemize}
+        \item Testabilidad del código
+        \item Mantenibilidad a largo plazo
+        \item Independencia de frameworks
+        \item Evolución del sistema
+    \end{itemize}
+
+    \item \textbf{Aplicación de Domain-Driven Design}
+
+    Se identificaron y modelaron correctamente tres Bounded Contexts (Monitoreo, Operaciones, Usuarios), cada uno con su propio lenguaje ubicuo y modelo de dominio coherente.
+
+    \item \textbf{Sistema de Autenticación Robusto}
+
+    La implementación de JWT con bcrypt proporciona un sistema de seguridad sólido que incluye:
+    \begin{itemize}
+        \item Autenticación stateless
+        \item Control de acceso basado en roles
+        \item Protección de contraseñas con hashing
+        \item Tokens con expiración configurable
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Beneficios Tangibles}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{5cm}|p{4cm}|p{5cm}|}
+\hline
+\textbf{Aspecto} & \textbf{Antes} & \textbf{Después} \\
+\hline
+Despliegue & Monolítico completo & Servicios independientes \\
+\hline
+Escalamiento & Todo o nada & Por servicio \\
+\hline
+Tecnología & Acoplada & Libertad por servicio \\
+\hline
+Desarrollo & Equipo único & Equipos paralelos \\
+\hline
+Testing & Complejo e integrado & Aislado por servicio \\
+\hline
+Fallos & Caída total & Aislamiento \\
+\hline
+\end{tabular}
+\caption{Comparación antes y después del rediseño}
+\end{table}
+
+\subsection{Lecciones Aprendidas}
+
+\subsubsection{Aspectos Técnicos}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Importancia de la Inversión de Dependencias}
+
+    El uso de interfaces en la capa de dominio permitió cambiar fácilmente de implementaciones de repositorio (de memoria a base de datos futura) sin afectar la lógica de negocio.
+
+    \item \textbf{Complejidad de la Comunicación}
+
+    La comunicación entre microservicios introduce latencia y necesidad de manejo de errores de red, aspectos que no existían en el monolito.
+
+    \item \textbf{Valor del Lenguaje Ubicuo}
+
+    Definir un vocabulario común entre desarrolladores y expertos del dominio redujo ambigüedades y malentendidos durante el desarrollo.
+
+    \item \textbf{Seguridad desde el Diseño}
+
+    Implementar autenticación y autorización desde el inicio evitó refactorings costosos posteriores.
+\end{enumerate}
+
+\subsubsection{Aspectos de Proceso}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Documentación Continua}
+
+    Mantener documentación actualizada durante el desarrollo facilitó la comprensión y mantenimiento del sistema.
+
+    \item \textbf{Testing Incremental}
+
+    Probar cada componente a medida que se desarrolla permite detectar errores tempranamente.
+
+    \item \textbf{Dockerización Temprana}
+
+    Containerizar desde el inicio garantiza consistencia entre entornos de desarrollo, testing y producción.
+\end{enumerate}
+
+\subsection{Recomendaciones para Producción}
+
+\subsubsection{Seguridad}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Variables de Entorno Seguras}
+    \begin{itemize}
+        \item Generar JWT\_SECRET criptográficamente seguro
+        \item Usar gestores de secretos (AWS Secrets Manager, HashiCorp Vault)
+        \item Rotar claves periódicamente
+    \end{itemize}
+
+    \item \textbf{HTTPS Obligatorio}
+    \begin{itemize}
+        \item Implementar TLS/SSL en todos los servicios
+        \item Usar certificados válidos (Let's Encrypt)
+        \item Configurar HSTS (HTTP Strict Transport Security)
+    \end{itemize}
+
+    \item \textbf{Rate Limiting}
+    \begin{itemize}
+        \item Limitar intentos de login fallidos
+        \item Proteger contra ataques DDoS
+        \item Implementar throttling por IP
+    \end{itemize}
+
+    \item \textbf{Logging y Monitoreo}
+    \begin{itemize}
+        \item ELK Stack (Elasticsearch, Logstash, Kibana)
+        \item Prometheus + Grafana para métricas
+        \item Alertas automáticas de seguridad
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Infraestructura}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Orquestación con Kubernetes}
+    \begin{itemize}
+        \item Migrar de Docker Compose a Kubernetes
+        \item Auto-scaling horizontal basado en carga
+        \item Health checks y auto-recovery
+        \item Rolling updates sin downtime
+    \end{itemize}
+
+    \item \textbf{Base de Datos Real}
+    \begin{itemize}
+        \item Implementar PostgreSQL para persistencia
+        \item Migrar MemoriaRepositorio a Prisma/TypeORM
+        \item Backups automáticos
+        \item Replicación para alta disponibilidad
+    \end{itemize}
+
+    \item \textbf{API Gateway Completo}
+    \begin{itemize}
+        \item Implementar Kong o NGINX como gateway
+        \item Centralizar autenticación
+        \item Rate limiting y throttling
+        \item Analytics y logging
+    \end{itemize}
+
+    \item \textbf{Service Mesh}
+    \begin{itemize}
+        \item Considerar Istio para gestión de tráfico
+        \item Circuit breakers
+        \item Retry logic
+        \item Observabilidad mejorada
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Calidad de Código}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Integración Continua (CI)}
+    \begin{itemize}
+        \item GitHub Actions o GitLab CI
+        \item Tests automáticos en cada commit
+        \item Análisis de código con SonarQube
+        \item Code coverage mínimo (80\%)
+    \end{itemize}
+
+    \item \textbf{Testing Completo}
+    \begin{itemize}
+        \item Unit tests (Jest)
+        \item Integration tests
+        \item E2E tests (Cypress)
+        \item Load testing (k6)
+    \end{itemize}
+
+    \item \textbf{Code Review}
+    \begin{itemize}
+        \item Pull requests obligatorios
+        \item Revisión por pares
+        \item Checklist de calidad
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Próximos Pasos}
+
+\subsubsection{Corto Plazo (1-2 meses)}
+
+\begin{enumerate}[leftmargin=*]
+    \item Configurar SonarQube para análisis de calidad
+    \item Implementar pruebas unitarias completas
+    \item Agregar pruebas de integración
+    \item Configurar CI/CD con GitHub Actions
+    \item Implementar logging estructurado
+\end{enumerate}
+
+\subsubsection{Mediano Plazo (3-6 meses)}
+
+\begin{enumerate}[leftmargin=*]
+    \item Migrar a PostgreSQL con Prisma
+    \item Implementar refresh tokens JWT
+    \item Agregar recuperación de contraseña
+    \item Implementar API Gateway con Kong
+    \item Desplegar en cloud (AWS/Azure/GCP)
+    \item Implementar monitoreo con Prometheus
+\end{enumerate}
+
+\subsubsection{Largo Plazo (6-12 meses)}
+
+\begin{enumerate}[leftmargin=*]
+    \item Extraer más microservicios:
+    \begin{itemize}
+        \item Servicio de Minas
+        \item Servicio de Turnos
+        \item Servicio de Reportes
+        \item Servicio de Notificaciones
+    \end{itemize}
+    \item Implementar Event-Driven Architecture
+    \item Message Queue (RabbitMQ/Kafka)
+    \item CQRS y Event Sourcing
+    \item Migrar a Kubernetes
+    \item Implementar Service Mesh (Istio)
+\end{enumerate}
+
+\subsection{Conclusión Final}
+
+El rediseño del Sistema de Monitoreo Minero de una arquitectura monolítica a microservicios ha sido exitoso, cumpliendo todos los objetivos establecidos en la Práctica 07. La aplicación de principios de Clean Architecture y Domain-Driven Design ha resultado en un sistema:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Escalable}: Capaz de crecer según demanda
+    \item \textbf{Mantenible}: Código organizado y testeable
+    \item \textbf{Seguro}: Autenticación y autorización robustas
+    \item \textbf{Flexible}: Fácil de extender y modificar
+    \item \textbf{Profesional}: Siguiendo mejores prácticas de la industria
+\end{itemize}
+
+Este proyecto sirve como base sólida para el crecimiento futuro del sistema y demuestra la viabilidad y beneficios de la arquitectura de microservicios cuando se aplica correctamente.
+
+\newpage
+
+% ========================================
+% REFERENCIAS
+% ========================================
+\section{Referencias}
+
+\subsection{Documentación del Proyecto}
+
+\begin{itemize}[leftmargin=*]
+    \item Pr7\_redesign.pdf - Guía oficial de la Práctica 07
+    \item ARQUITECTURA-MICROSERVICIOS.md - Documentación de arquitectura
+    \item AUTENTICACION-JWT.md - Documentación de seguridad
+    \item README.md - Guía de inicio rápido
+\end{itemize}
+
+\subsection{Arquitectura y Patrones}
+
+\begin{itemize}[leftmargin=*]
+    \item Martin Fowler - \textit{Microservices} \\
+    \url{https://martinfowler.com/articles/microservices.html}
+
+    \item Microsoft - \textit{Microservices Architecture} \\
+    \url{https://learn.microsoft.com/en-us/azure/architecture/microservices/}
+
+    \item Sam Newman - \textit{Building Microservices}, O'Reilly Media, 2021
+
+    \item Chris Richardson - \textit{Microservices Patterns}, Manning Publications, 2018
+\end{itemize}
+
+\subsection{Domain-Driven Design}
+
+\begin{itemize}[leftmargin=*]
+    \item Eric Evans - \textit{Domain-Driven Design: Tackling Complexity in the Heart of Software}, Addison-Wesley Professional, 2003
+
+    \item Vaughn Vernon - \textit{Implementing Domain-Driven Design}, Addison-Wesley Professional, 2013
+
+    \item Vaughn Vernon - \textit{Domain-Driven Design Distilled}, Addison-Wesley Professional, 2016
+\end{itemize}
+
+\subsection{Clean Architecture}
+
+\begin{itemize}[leftmargin=*]
+    \item Robert C. Martin - \textit{Clean Architecture: A Craftsman's Guide to Software Structure and Design}, Prentice Hall, 2017
+
+    \item Robert C. Martin - \textit{Clean Code: A Handbook of Agile Software Craftsmanship}, Prentice Hall, 2008
+
+    \item Robert C. Martin - \textit{The Clean Coder: A Code of Conduct for Professional Programmers}, Prentice Hall, 2011
+\end{itemize}
+
+\subsection{Seguridad}
+
+\begin{itemize}[leftmargin=*]
+    \item JWT.io - \textit{JSON Web Tokens Introduction} \\
+    \url{https://jwt.io/introduction}
+
+    \item RFC 7519 - \textit{JSON Web Token (JWT)} \\
+    \url{https://tools.ietf.org/html/rfc7519}
+
+    \item OWASP - \textit{Authentication Cheat Sheet} \\
+    \url{https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html}
+
+    \item bcrypt - \textit{bcrypt NPM Package} \\
+    \url{https://github.com/kelektiv/node.bcrypt.js}
+\end{itemize}
+
+\subsection{Tecnologías}
+
+\begin{itemize}[leftmargin=*]
+    \item Express.js Documentation \\
+    \url{https://expressjs.com/}
+
+    \item TypeScript Documentation \\
+    \url{https://www.typescriptlang.org/docs/}
+
+    \item Docker Documentation \\
+    \url{https://docs.docker.com/}
+
+    \item http-proxy-middleware \\
+    \url{https://github.com/chimurai/http-proxy-middleware}
+
+    \item Node.js Best Practices \\
+    \url{https://github.com/goldbergyoni/nodebestpractices}
+\end{itemize}
+
+% ========================================
+% FIN DEL DOCUMENTO
+% ========================================
+\end{document}

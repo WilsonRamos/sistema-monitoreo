@@ -1,455 +1,475 @@
-# 🏭 Sistema de Monitoreo Minero
+# Sistema de Monitoreo Minero - Arquitectura de Microservicios
 
-**Universidad Nacional de San Agustín de Arequipa**  
-**Ingeniería de Software I**  
-**Fecha:** Julio 2025
+[![Clean Architecture](https://img.shields.io/badge/Architecture-Clean-blue)](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+[![DDD](https://img.shields.io/badge/Design-Domain--Driven-green)](https://martinfowler.com/tags/domain%20driven%20design.html)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
 
----
-
-## 📋 Propósito
-
-El Sistema de Monitoreo Minero es una plataforma web desarrollada para **gestionar y monitorear equipos de cargue y transporte** en operaciones mineras. El sistema está diseñado aplicando **Domain Driven Design (DDD)** con **Clean Architecture**, utilizando **TypeScript**, **Express.js** como framework MVC, y preparado para integración con **Prisma ORM**.
-
-### Objetivos del Sistema:
-- **Gestionar equipos mineros** (volquetes, excavadoras, bulldozers)
-- **Monitorear operaciones** de cargue y transporte en tiempo real
-- **Optimizar la eficiencia operacional** mediante seguimiento centralizado
-- **Aplicar principios de arquitectura limpia** y buenas prácticas de desarrollo
-- **Demostrar implementación práctica** de DDD y Clean Architecture
+Sistema de monitoreo de equipos mineros implementado con **Clean Architecture**, **Domain-Driven Design (DDD)** y arquitectura de **Microservicios**.
 
 ---
 
-## 🚀 Funcionalidades
+## 🚀 Inicio Rápido
 
-### **Funcionalidades de Alto Nivel**
+### Opción 1: Docker Compose (Recomendado)
 
-#### **Diagrama de Casos de Uso UML**
-```
-                    SISTEMA DE MONITOREO MINERO
-    
-    Supervisor                    Sistema                    Operador
-        │                                                       │
-        │─────► Registrar Equipo                                │
-        │                                                       │
-        │─────► Consultar Equipos ◄─────────────────────────────│
-        │                                                       │
-        │─────► Actualizar Estado                               │
-        │                                                       │
-        │─────► Monitorear Operaciones                          │
-        │                                                       │
-        │─────► Generar Reportes                                │
-
-    Casos de Uso Implementados:
-    • UC-001: Registrar Nuevo Equipo
-    • UC-002: Consultar Lista de Equipos  
-    • UC-003: Filtrar Equipos por Tipo
-    • UC-004: Filtrar Equipos por Estado
-    • UC-005: Obtener Equipo Específico
-```
-
-#### **Funcionalidades Implementadas:**
-
-##### **RF-001: Gestión de Equipos**
-- **Actor**: Supervisor de Operaciones
-- **Descripción**: CRUD completo de equipos mineros
-- **Criterios de Aceptación**:
-  - ✅ Crear equipo con código único y tipo válido
-  - ✅ Listar todos los equipos registrados
-  - ✅ Buscar equipos por tipo (VOLQUETE, EXCAVADORA, BULLDOZER)
-  - ✅ Buscar equipos por estado (DISPONIBLE, OPERANDO, MANTENIMIENTO)
-  - ✅ Validación de datos de entrada
-  - ✅ Manejo de errores y respuestas consistentes
-
-##### **RF-002: API REST**
-- **Actor**: Sistema Externo / Frontend
-- **Descripción**: Endpoints REST para integración
-- **Criterios de Aceptación**:
-  - ✅ POST /api/equipos - Crear nuevo equipo
-  - ✅ GET /api/equipos - Listar equipos con filtros opcionales
-  - ✅ GET /api/equipos/:id - Obtener equipo específico
-  - ✅ Respuestas en formato JSON estandarizado
-  - ✅ Códigos de estado HTTP apropiados
-
-##### **RF-003: Interfaz Web**
-- **Actor**: Usuario Final
-- **Descripción**: Página web para interacción directa
-- **Criterios de Aceptación**:
-  - ✅ Formulario de registro de equipos
-  - ✅ Lista dinámica de equipos registrados
-  - ✅ Integración en tiempo real con API
-  - ✅ Interfaz responsive y amigable
-  - ✅ Validación de formularios
-
-
-
-### **Tecnologías por Capa:**
-
-| **Capa** | **Tecnologías** | **Responsabilidad** |
-|----------|-----------------|---------------------|
-| **Presentation** | Express.js, HTML, CSS, JavaScript | HTTP, UI, Routing |
-| **Application** | TypeScript, Use Cases, DTOs | Orquestación, Coordinación |
-| **Domain** | TypeScript, Entities, Interfaces | Lógica de Negocio, Reglas |
-| **Infrastructure** |  Prisma , PostgreSQL | Persistencia, Servicios Externos |
-
----
-
-## 🛠️ Tecnologías Utilizadas
-
-### **Stack Tecnológico Principal:**
-
-| **Categoría** | **Tecnología** | **Versión** | **Propósito** |
-|---------------|----------------|-------------|---------------|
-| **Lenguaje** | TypeScript | ^5.0.0 | Tipado estático, POO |
-| **Framework Web** | Express.js | ^4.18.2 | Framework MVC |
-| **ORM** | Prisma | ^5.7.1 | Object-Relational Mapping |
-| **Base de Datos** | PostgreSQL | 14+ | Base de datos relacional |
-| **Runtime** | Node.js | 18+ | Entorno de ejecución |
-| **Arquitectura** | Clean Architecture + DDD | - | Patrón arquitectónico |
-
-### **Dependencias de Desarrollo:**
-
-```json
-{
-  "dependencies": {
-    "express": "^4.18.2"
-  },
-  "devDependencies": {
-    "typescript": "^5.0.0",
-    "@types/node": "^20.0.0",
-    "@types/express": "^4.17.17",
-    "ts-node": "^10.9.0"
-  }
-}
-```
-
-### **Configuración del Proyecto:**
-
-#### **TypeScript Configuration (`tsconfig.json`):**
-```json
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "outDir": "./dist",
-    "rootDir": "./",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
-  }
-}
-```
-
-
-## 🔗 API REST Endpoints
-
-### **Especificación de la API:**
-
-#### **Base URL:** `http://localhost:3000/api`
-
-### **Endpoints Implementados:**
-
-#### **1. Crear Equipo**
-```http
-POST /api/equipos
-Content-Type: application/json
-
-{
-  "codigo": "VOL-001",
-  "tipo": "VOLQUETE"
-}
-```
-
-**Respuesta Exitosa (201):**
-```json
-{
-  "success": true,
-  "message": "Equipo creado exitosamente",
-  "timestamp": "2025-07-06T23:30:00.000Z",
-  "data": {
-    "id": "equipo-1720303800000-123",
-    "codigo": "VOL-001",
-    "tipo": "VOLQUETE",
-    "estado": "DISPONIBLE"
-  }
-}
-```
-
-#### **2. Listar Equipos**
-```http
-GET /api/equipos
-```
-
-**Query Parameters (Opcionales):**
-- `tipo`: Filtrar por tipo (VOLQUETE, EXCAVADORA, BULLDOZER)
-- `estado`: Filtrar por estado (DISPONIBLE, OPERANDO, MANTENIMIENTO)
-
-**Respuesta Exitosa (200):**
-```json
-{
-  "success": true,
-  "message": "Equipos obtenidos exitosamente",
-  "timestamp": "2025-07-06T23:30:00.000Z",
-  "data": [
-    {
-      "id": "demo-001",
-      "codigo": "VOL-DEMO",
-      "tipo": "VOLQUETE",
-      "estado": "DISPONIBLE",
-      "fechaConsulta": "2025-07-06T23:30:00.000Z"
-    }
-  ],
-  "metadata": {
-    "total": 1,
-    "filtros": { "tipo": null, "estado": null }
-  }
-}
-```
-
-#### **3. Obtener Equipo por ID**
-```http
-GET /api/equipos/{id}
-```
-
-**Respuesta Exitosa (200):**
-```json
-{
-  "success": true,
-  "message": "Equipo encontrado exitosamente",
-  "timestamp": "2025-07-06T23:30:00.000Z",
-  "data": {
-    "id": "demo-001",
-    "codigo": "VOL-DEMO",
-    "tipo": "VOLQUETE",
-    "estado": "DISPONIBLE",
-    "fechaConsulta": "2025-07-06T23:30:00.000Z"
-  }
-}
-```
-
-#### **4. Health Check**
-```http
-GET /health
-```
-
-**Respuesta (200):**
-```json
-{
-  "status": "OK",
-  "message": "Sistema de Monitoreo funcionando correctamente",
-  "timestamp": "2025-07-06T23:30:00.000Z",
-  "arquitectura": {
-    "patron": "Clean Architecture + DDD",
-    "lenguaje": "TypeScript",
-    "framework": "Express.js",
-    "capas": ["Presentación", "Aplicación", "Dominio", "Infraestructura"]
-  }
-}
-```
-
-### **Códigos de Estado HTTP:**
-
-| **Código** | **Significado** | **Cuándo se usa** |
-|------------|-----------------|-------------------|
-| 200 | OK | Consultas exitosas |
-| 201 | Created | Creación exitosa de recursos |
-| 400 | Bad Request | Datos de entrada inválidos |
-| 404 | Not Found | Recurso no encontrado |
-| 409 | Conflict | Código duplicado |
-| 500 | Internal Server Error | Errores del servidor |
-
----
-
-## 🚀 Instalación y Ejecución
-
-### **Prerrequisitos:**
-- **Node.js** 18.0.0 o superior
-- **npm** 8.0.0 o superior
-- **Git** para clonar el repositorio
-
-### **Pasos de Instalación:**
-
-#### **1. Clonar el Repositorio**
 ```bash
-git clone https://github.com/[usuario]/sistema-monitoreo-minero.git
-cd sistema-monitoreo-minero
+# 1. Clonar/Navegar al proyecto
+cd c:\Users\bug\Desktop\Wilson\sistema-monitoreo
+
+# 2. Ejecutar con Docker Compose
+docker-compose up --build
+
+# 3. Abrir navegador
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:4000
 ```
 
-#### **2. Instalar Dependencias**
+### Opción 2: Desarrollo Local
+
+**Terminal 1 - Backend**:
 ```bash
+cd backend
 npm install
-```
-
-#### **3. Verificar Configuración**
-```bash
-# Verificar que TypeScript compila correctamente
-npm run build
-
-# Verificar estructura de archivos
-ls -la
-```
-
-#### **4. Ejecutar en Modo Desarrollo**
-```bash
 npm run dev
 ```
 
-#### **5. Verificar Funcionamiento**
-- **Página web**: http://localhost:3000
-- **API REST**: http://localhost:3000/api/equipos
-- **Health Check**: http://localhost:3000/health
-
-## 👥 Equipo de Desarrollo
-
-### **Información del Equipo:**
-
-| **Rol** | **Nombre** | **Responsabilidades** |
-|---------|------------|----------------------|
-| **Team Lead & Full Stack** | [Wilson Ramos Pacco ]| Arquitectura, Backend, Frontend, Documentación |
-| **Backend Developer** | [Rimsky Augusto Miramida Bellido] | Domain Layer, Use Cases, API REST |
-| **Frontend Developer** | [Jose Alberto Rivera Torres] | UI/UX, Integration, Testing |
-| **DevOps & QA** | [MORALES TACCA, Luis Fernando y RIVAS ABRIL, Jorge Aaron] | CI/CD, Testing, Deployment |
-
-
-## 📚 Buenas Prácticas Implementadas
-
-### **Clean Code & SOLID:**
-
-#### **1. Single Responsibility Principle (SRP)**
-```typescript
-//Cada clase tiene una responsabilidad específica
-class CrearEquipo {
-  // Solo se encarga de crear equipos
-}
-
-class EquipoController {
-  // Solo maneja HTTP requests/responses
-}
+**Terminal 2 - Frontend**:
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
-#### **2. Dependency Inversion Principle (DIP)**
-```typescript
-// Depende de abstracciones, no de implementaciones
-class CrearEquipo {
-  constructor(private equipoRepositorio: IEquipoRepositorio) {}
-  //                                     ↑ Interface, no implementación
-}
+**Abrir**: http://localhost:3000
+
+---
+
+## 📋 Tabla de Contenidos
+
+- [Arquitectura](#arquitectura)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Microservicios](#microservicios)
+- [Documentación](#documentación)
+- [Tecnologías](#tecnologías)
+- [Práctica 07](#práctica-07)
+
+---
+
+## 🏗️ Arquitectura
+
+### Diagrama de Microservicios
+
+```
+┌──────────────┐
+│   Usuario    │
+└──────┬───────┘
+       │
+       │ HTTP
+       ▼
+┌─────────────────────────┐        ┌─────────────────────────┐
+│  FRONTEND SERVICE       │        │  BACKEND SERVICE        │
+│  Puerto: 3000           │◄──────►│  Puerto: 4000           │
+│                         │  Proxy │                         │
+│  ┌──────────────────┐  │   +    │  ┌──────────────────┐  │
+│  │ Express Static   │  │  CORS  │  │ REST API         │  │
+│  │ + Proxy          │  │        │  │ + DDD            │  │
+│  └──────────────────┘  │        │  └──────────────────┘  │
+└─────────────────────────┘        └─────────────────────────┘
 ```
 
-#### **3. Interface Segregation Principle (ISP)**
-```typescript
-// Interfaces específicas y cohesivas
-interface IEquipoRepositorio {
-  crear(equipo: Equipo): Promise<void>;
-  obtenerTodos(): Promise<Equipo[]>;
-  // Solo métodos relacionados con persistencia de equipos
-}
+### Principios Aplicados
+
+- ✅ **Clean Architecture**: Separación de capas (Presentación, Aplicación, Dominio, Infraestructura)
+- ✅ **Domain-Driven Design**: Bounded Contexts (Monitoreo, Operaciones)
+- ✅ **SOLID Principles**: Inyección de dependencias, Single Responsibility
+- ✅ **Microservices**: Servicios independientes, comunicación API REST
+- ✅ **API RESTful**: Comunicación entre frontend y backend
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+sistema-monitoreo/
+│
+├── frontend/                          # Microservicio Frontend (Puerto 3000)
+│   ├── src/
+│   │   └── server.ts                  # Servidor Express + Proxy
+│   ├── public/
+│   │   ├── index.html                 # Interfaz de usuario
+│   │   └── js/
+│   │       ├── config.js              # Configuración
+│   │       └── app.js                 # Lógica del cliente
+│   ├── package.json
+│   ├── Dockerfile
+│   └── README.md
+│
+├── backend/                           # Microservicio Backend (Puerto 4000)
+│   ├── aplicacion/
+│   │   ├── Dominio/                   # Capa de Dominio (DDD)
+│   │   │   ├── monitoreo/             # BC: Monitoreo de Equipos
+│   │   │   └── operaciones/           # BC: Operaciones Mineras
+│   │   ├── casos-uso/                 # Capa de Aplicación
+│   │   └── infraestructura/           # Capa de Infraestructura
+│   ├── presentacion/                  # Capa de Presentación
+│   │   ├── api/                       # REST API
+│   │   └── index.ts                   # Server + CORS
+│   ├── package.json
+│   └── Dockerfile
+│
+├── docker-compose.yml                 # Orquestación de servicios
+│
+├── ARQUITECTURA-MICROSERVICIOS.md     # Documentación exhaustiva
+├── INSTRUCCIONES-EJECUCION.md         # Guía de ejecución
+├── RESUMEN-IMPLEMENTACION.md          # Resumen de implementación
+└── README.md                          # Este archivo
 ```
 
-#### **3. Repository Pattern**
-```typescript
-// Dominio define QUÉ necesita
-interface IEquipoRepositorio {
-  obtenerTodos(): Promise<Equipo[]>;
-}
+---
 
-// Infraestructura define CÓMO se obtiene
-class MemoriaEquipoRepositorio implements IEquipoRepositorio {
-  async obtenerTodos(): Promise<Equipo[]> {
-    return [...this.equipos]; // Implementación específica
-  }
-}
+## 🔧 Microservicios
+
+### Frontend Microservice
+
+**Responsabilidad**: Presentación e interacción con el usuario
+
+**Tecnologías**:
+- Express.js (servidor estático)
+- HTTP Proxy Middleware
+- HTML/CSS/JavaScript
+- TypeScript
+
+**Puerto**: 3000
+
+**Características**:
+- Sirve archivos estáticos
+- Proxy transparente hacia backend
+- Configuración dinámica de endpoints
+- Health check endpoint
+
+[Ver documentación completa →](frontend/README.md)
+
+---
+
+### Backend Microservice
+
+**Responsabilidad**: Lógica de negocio y persistencia
+
+**Tecnologías**:
+- Express.js (REST API)
+- TypeScript
+- Clean Architecture
+- Domain-Driven Design
+- Jest (testing)
+
+**Puerto**: 4000
+
+**Características**:
+- API REST con CORS
+- Clean Architecture (4 capas)
+- DDD (Bounded Contexts)
+- Repositorios en memoria
+- Casos de uso bien definidos
+
+---
+
+## 📚 Documentación
+
+| Documento | Descripción |
+|-----------|-------------|
+| [ARQUITECTURA-MICROSERVICIOS.md](ARQUITECTURA-MICROSERVICIOS.md) | Análisis exhaustivo de la arquitectura, decisiones de diseño, diagramas completos |
+| [INSTRUCCIONES-EJECUCION.md](INSTRUCCIONES-EJECUCION.md) | Guía paso a paso para ejecutar los servicios, troubleshooting |
+| [RESUMEN-IMPLEMENTACION.md](RESUMEN-IMPLEMENTACION.md) | Resumen ejecutivo de la implementación y validación de requisitos |
+| [frontend/README.md](frontend/README.md) | Documentación específica del microservicio frontend |
+
+---
+
+## 💻 Tecnologías
+
+### Runtime & Frameworks
+- Node.js 18+
+- Express.js 4.18+
+- TypeScript 5.0+
+
+### Herramientas de Desarrollo
+- npm
+- Nodemon
+- ts-node
+- Grunt (backend build)
+
+### Testing
+- Jest
+- Supertest
+
+### DevOps
+- Docker
+- Docker Compose
+
+### Arquitectura
+- Clean Architecture
+- Domain-Driven Design
+- REST API
+- CORS
+- HTTP Proxy Middleware
+
+---
+
+## 🎓 Práctica 07 - Rediseño a Microservicios
+
+Este proyecto implementa los requisitos de la **Práctica 07** de Ingeniería de Software II (UNSA):
+
+### Objetivos Cumplidos
+
+✅ **Punto 11**: Desacoplar frontend del backend
+- Frontend extraído en `/frontend`
+- Comunicación API RESTful
+- CORS configurado
+- Proxy implementado
+
+✅ **Arquitectura de Microservicios**
+- Servicios independientes
+- Ejecución en puertos separados
+- Dockerización completa
+
+✅ **Domain-Driven Design**
+- Bounded Contexts identificados
+- Lenguaje ubicuo aplicado
+- Agregados y Entidades definidos
+
+✅ **Clean Architecture**
+- 4 capas bien separadas
+- Dependency Inversion
+- Casos de uso aislados
+
+[Ver análisis completo de la práctica →](ARQUITECTURA-MICROSERVICIOS.md)
+
+---
+
+## 📊 APIs Disponibles
+
+### Frontend (http://localhost:3000)
+
+| Endpoint | Descripción |
+|----------|-------------|
+| `GET /` | Aplicación web |
+| `GET /health` | Health check del frontend |
+| `/api/*` | Proxy hacia backend |
+
+### Backend (http://localhost:4000)
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/` | Información del API |
+| GET | `/health` | Health check del backend |
+| **Equipos** |
+| POST | `/api/equipos` | Crear equipo |
+| GET | `/api/equipos` | Listar equipos |
+| GET | `/api/equipos/:id` | Obtener equipo por ID |
+| **Operaciones** |
+| POST | `/api/operaciones` | Iniciar operación |
+| GET | `/api/operaciones` | Listar operaciones |
+
+---
+
+## 🔐 Seguridad
+
+### Implementado
+
+- ✅ CORS configurado
+- ✅ Type Safety con TypeScript
+- ✅ Input validation
+- ✅ Non-root Docker users
+- ✅ Environment variables
+
+### Pendiente (Producción)
+
+- [ ] Autenticación JWT
+- [ ] Rate limiting
+- [ ] HTTPS/TLS
+- [ ] Secrets management
+
+---
+
+## 🧪 Testing
+
+```bash
+# Backend
+cd backend
+npm test
+npm run test:coverage
 ```
 
-## Convenciones de Codificación Aplicadas
+---
 
-### Nombres
+## 🚢 Despliegue
 
-#### Convención de Clases (PascalCase)
-```typescript
-export class EquipoController { }
-export class CrearEquipo { }
-export class ObtenerEquipos { }
-export class Equipo { }
+### Docker Compose (Recomendado)
+
+```bash
+# Construir y ejecutar
+docker-compose up --build
+
+# Modo detached
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f
+
+# Detener
+docker-compose down
 ```
 
-#### Convención de Métodos y Variables (camelCase)
-```typescript
-// Métodos
-async crear(req: Request, res: Response): Promise<void>
-async obtenerTodos(): Promise<EquipoDto[]>
-async ejecutar(): Promise<string>
+### Docker Individual
 
-// Variables
-private readonly equipoRepositorio: IEquipoRepositorio
-const nuevoEstado: string
-const tiposValidos: string[]
+```bash
+# Frontend
+cd frontend
+docker build -t frontend-ms .
+docker run -p 3000:3000 frontend-ms
+
+# Backend
+cd backend
+docker build -t backend-ms .
+docker run -p 4000:4000 backend-ms
 ```
 
-#### Propiedades Privadas (underscore prefix)
-```typescript
-private _id: string;
-private _codigo: string;
-private _tipo: string;
-private _estado: string;
+---
+
+## 🛠️ Desarrollo
+
+### Requisitos
+
+- Node.js 18+
+- npm 8+
+- Docker (opcional)
+- Docker Compose (opcional)
+
+### Instalación Local
+
+```bash
+# Backend
+cd backend
+npm install
+
+# Frontend
+cd frontend
+npm install
 ```
 
-#### Interfaces (I prefix)
-```typescript
-export interface IEquipoRepositorio {
-    crear(equipo: Equipo): Promise<void>;
-    obtenerTodos(): Promise<Equipo[]>;
-}
+### Scripts Disponibles
+
+**Frontend**:
+```bash
+npm run dev          # Desarrollo con hot-reload
+npm run build        # Compilar TypeScript
+npm start            # Ejecutar versión compilada
 ```
 
-#### Constantes y Enumeraciones (UPPER_CASE)
-```typescript
-const tiposValidos = ['VOLQUETE', 'EXCAVADORA', 'BULLDOZER', 'GRUA', 'PERFORADORA'];
-const estadosValidos = ['DISPONIBLE', 'OPERANDO', 'MANTENIMIENTO', 'INACTIVO'];
+**Backend**:
+```bash
+npm run dev          # Desarrollo con hot-reload
+npm run build        # Compilar con Grunt
+npm start            # Build + Start
+npm test             # Ejecutar tests
 ```
 
-### Funciones
+---
 
-#### Responsabilidad Única
-```typescript
-// Cada método tiene una responsabilidad específica
-private validarDatosCreacion(codigo: any, tipo: any): string[]
-private crearRespuestaExitosa(mensaje: string, data?: any): any
-private manejarError(res: Response, error: any): void
+## 🐛 Troubleshooting
+
+### Puerto en uso
+
+```bash
+# Windows - Encontrar proceso
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+
+# Linux/Mac
+lsof -i :3000
+kill -9 <PID>
 ```
 
-#### Operaciones Asíncronas
-```typescript
-// Uso consistente de async/await
-async crear(equipo: Equipo): Promise<void>
-async obtenerTodos(): Promise<Equipo[]>
-async ejecutar(codigo: string, tipo: string): Promise<string>
-```
+### Error de CORS
 
-#### Tipado Explícito
-```typescript
-// Parámetros y retornos tipados
-async buscarPorTipo(tipo: string): Promise<Equipo[]>
-private validarTipo(tipo: string): void
-obtenerInfo(): any
-```
+1. Verificar que el backend tenga CORS habilitado
+2. Reiniciar backend
+3. Limpiar caché del navegador
 
-### Comentarios
+### Cannot connect to backend
 
-#### Documentación JSDoc
-```typescript
-/**
- * Caso de Uso: Crear Nuevo Equipo
- * 
- * Responsabilidades:
- * 1. Coordinar la creación de un equipo
- * 2. Validar datos de entrada (nivel aplicación)
- * 3. Delegar validaciones de negocio al dominio
- */
-```
+1. Verificar que el backend esté corriendo:
+   ```bash
+   curl http://localhost:4000/health
+   ```
+2. Verificar configuración en `frontend/public/js/config.js`
 
-### **Repositorio y Enlaces:**
-- **GitHub**: https://github.com/WilsonRamos/sistema-monitoreo
-- **Documentación**: `/docs` en el repositorio
-- **Issues**: GitHub Issues para reportar problemas
+[Ver guía completa de troubleshooting →](INSTRUCCIONES-EJECUCION.md#solución-de-problemas)
+
+---
+
+## 🗺️ Roadmap
+
+### Corto Plazo
+- [ ] Implementar tests en frontend
+- [ ] Configurar SonarQube
+- [ ] CI/CD con GitHub Actions
+
+### Mediano Plazo
+- [ ] Autenticación JWT
+- [ ] API Gateway completo (Kong/NGINX)
+- [ ] Base de datos real (PostgreSQL)
+- [ ] Logging centralizado (ELK)
+
+### Largo Plazo
+- [ ] Extraer más microservicios
+- [ ] Event-Driven Architecture
+- [ ] CQRS + Event Sourcing
+- [ ] Kubernetes deployment
+
+---
+
+## 📖 Referencias
+
+### Arquitectura
+- [Clean Architecture - Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- [Domain-Driven Design - Eric Evans](https://domainlanguage.com/ddd/)
+- [Microservices Pattern - Chris Richardson](https://microservices.io/)
+
+### Microsoft Docs
+- [Microservices Architecture](https://learn.microsoft.com/en-us/azure/architecture/microservices/)
+- [Domain Analysis for Microservices](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis)
+
+### Tecnologías
+- [Express.js](https://expressjs.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Docker](https://docs.docker.com/)
+
+---
+
+## 👥 Contribución
+
+Este proyecto es parte de la **Práctica 07** del curso de **Ingeniería de Software II** de la **Universidad Nacional de San Agustín de Arequipa (UNSA)**.
+
+---
+
+## 📄 Licencia
+
+MIT
+
+---
+
+## 📞 Contacto
+
+Para dudas o sugerencias, consultar:
+- [Documentación completa](ARQUITECTURA-MICROSERVICIOS.md)
+- [Guía de la práctica](backend/Pr7_redesign.pdf)
+- Instructor: DSc. Edgar Sarmiento Calisaya
+
+---
+
+**Universidad Nacional de San Agustín de Arequipa**
+**Escuela Profesional de Ciencia de la Computación**
+**Ingeniería de Software II - Práctica 07**
+
+Versión: 1.0.0 | Fecha: Enero 2026

@@ -1,0 +1,146 @@
+version: "3.8"
+
+services:
+  # ============================================
+  # POSTGRES DATABASE
+  # ============================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: sistema-monitoreo-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: monitoreo_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
+      TZ: America/Lima
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infraestructura/persistencia/prisma/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d monitoreo_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - app-network
+
+  # ============================================
+  # APLICACIÓN (SISTEMA MONITOREO)
+  # ============================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: sistema-monitoreo:latest
+    container_name: sistema-monitoreo-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      
+      # Database
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: monitoreo_db
+      DB_USER: admin
+      DB_PASSWORD: ${DB_PASSWORD:-changeme}
+      
+      # Application
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FORMAT: json
+      
+      # Security
+      JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
+      JWT_EXPIRATION: 24h
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      # Solo logs en modo producción (no montar código fuente)
+      - app_logs:/usr/src/app/logs
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})\""]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - app-network
+
+  # ============================================
+  # SONARQUBE (ANÁLISIS DE CÓDIGO)
+  # ============================================
+  sonarqube:
+    image: sonarqube:community
+    container_name: sistema-monitoreo-sonarqube
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+      SONAR_JDBC_URL: jdbc:postgresql://postgres:5432/sonarqube_db
+      SONAR_JDBC_USERNAME: admin
+      SONAR_JDBC_PASSWORD: ${DB_PASSWORD:-changeme}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    networks:
+      - app-network
+
+  # ============================================
+  # PGADMIN (ADMINISTRADOR DE POSTGRES)
+  # ============================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: sistema-monitoreo-pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@monitoreo.com
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+# ============================================
+# VOLUMES
+# ============================================
+volumes:
+  postgres_data:
+    driver: local
+  app_logs:
+    driver: local
+  sonarqube_data:
+    driver: local
+  sonarqube_extensions:
+    driver: local
+  sonarqube_logs:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+# ============================================
+# NETWORKS
+# ============================================
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

@@ -1,0 +1,56 @@
+# ============================================
+# DOCKER COMPOSE - DESARROLLO
+# ============================================
+# Uso: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+version: "3.8"
+
+services:
+  # ============================================
+  # APLICACIÓN (MODO DESARROLLO)
+  # ============================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder  # Usa stage de builder en vez de production
+    image: sistema-monitoreo:dev
+    container_name: sistema-monitoreo-app-dev
+    volumes:
+      # Montar código fuente para hot-reload
+      - ./aplicacion:/usr/src/app/aplicacion:ro
+      - ./Dominio:/usr/src/app/Dominio:ro
+      - ./infraestructura:/usr/src/app/infraestructura:ro
+      - ./presentacion:/usr/src/app/presentacion:ro
+      - ./app.ts:/usr/src/app/app.ts:ro
+      # Excluir node_modules para evitar conflictos
+      - /usr/src/app/node_modules
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: debug
+    command: npm run dev
+    ports:
+      - "3000:3000"
+      - "9229:9229"  # Puerto para debugging
+    stdin_open: true
+    tty: true
+
+  # ============================================
+  # POSTGRES (MODO DESARROLLO)
+  # ============================================
+  postgres:
+    ports:
+      - "5432:5432"  # Exponer puerto para acceso directo
+    environment:
+      POSTGRES_PASSWORD: dev_password
+    volumes:
+      # Usar volumen local para debug
+      - ./data/postgres:/var/lib/postgresql/data
+
+  # ============================================
+  # PGADMIN (DESARROLLO)
+  # ============================================
+  pgadmin:
+    environment:
+      PGADMIN_DEFAULT_EMAIL: dev@monitoreo.com
+      PGADMIN_DEFAULT_PASSWORD: dev

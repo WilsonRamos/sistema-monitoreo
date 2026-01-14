@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Monitoreo Minero</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 30px 0; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; color: #ffd700; }
+        .header p { font-size: 1.1rem; opacity: 0.9; }
+        .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card {
+            background: #ffffff1a;
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .card h3 { color: #ffd700; margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+        .btn {
+            background: #ffd700;
+            color: #1e3c72;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+        .btn:hover { background: #ffed4a; }
+        .equipos-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .equipo-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            border-left: 3px solid #ffd700;
+        }
+        .success { color: #4ade80; }
+        .error { color: #ff6b6b; }
+        .api-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            grid-column: 1 / -1;
+        }
+        .endpoint {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin: 8px 0;
+            font-family: monospace;
+        }
+        .method { color: #4ade80; font-weight: bold; }
+        .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .user-name { font-weight: bold; font-size: 1.1rem; }
+        .user-role {
+            background: #ffd700;
+            color: #1e3c72;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .btn-logout {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-logout:hover { background: #ff5252; }
+        @media (max-width: 768px) {
+            .main-content { grid-template-columns: 1fr; }
+            .header h1 { font-size: 2rem; }
+            .user-info { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🏭 Sistema de Monitoreo Minero</h1>
+            <p>Clean Architecture + DDD | Microservicios Frontend-Backend</p>
+        </header>
+
+        <!-- INFORMACIÓN DEL USUARIO -->
+        <div class="user-info" id="userInfo">
+            <div class="user-details">
+                <span class="user-name" id="userName">Cargando...</span>
+                <span class="user-role" id="userRole"></span>
+            </div>
+            <button class="btn-logout" onclick="handleLogout()">🚪 Cerrar Sesión</button>
+        </div>
+
+        <div class="main-content">
+            <!-- FORMULARIO CREAR EQUIPO -->
+            <div class="card">
+                <h3>📝 Registrar Nuevo Equipo</h3>
+                <form id="equipoForm">
+                    <div class="form-group">
+                        <label for="codigo">Código del Equipo:</label>
+                        <input type="text" id="codigo" placeholder="Ej: VOL-001" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipo">Tipo de Equipo:</label>
+                        <select id="tipo" required>
+                            <option value="">Seleccionar tipo</option>
+                            <option value="VOLQUETE">Volquete</option>
+                            <option value="EXCAVADORA">Excavadora</option>
+                            <option value="BULLDOZER">Bulldozer</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn">✅ Crear Equipo</button>
+                </form>
+                <div id="mensaje"></div>
+            </div>
+
+            <!-- LISTA DE EQUIPOS -->
+            <div class="card">
+                <h3>🚛 Equipos Registrados</h3>
+                <button onclick="cargarEquipos()" class="btn">🔄 Actualizar Lista</button>
+                <div id="equiposList" class="equipos-list">
+                    <p>Cargando equipos...</p>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT PARA FUNCIONALIDAD -->
+    <script src="/js/config.js"></script>
+    <script src="/js/auth.service.js"></script>
+    <script>
+        // ═══════════════════════════════════════
+        // VERIFICAR AUTENTICACIÓN AL CARGAR
+        // ═══════════════════════════════════════
+        window.addEventListener('DOMContentLoaded', () => {
+            // Verificar autenticación
+            AuthService.requireAuth();
+
+            // Mostrar información del usuario
+            const user = AuthService.getUser();
+            if (user) {
+                document.getElementById('userName').textContent = `👤 ${user.username}`;
+                document.getElementById('userRole').textContent = user.rol;
+            }
+        });
+
+        // ═══════════════════════════════════════
+        // FUNCIÓN PARA CERRAR SESIÓN
+        // ═══════════════════════════════════════
+        function handleLogout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                AuthService.logout();
+            }
+        }
+    </script>
+    <script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,19 +1,178 @@
-version: "3.8"
-services:
-  sonarqube:
-    image: sonarqube:community
-    container_name: sonarqube
-    ports:
-      - "9000:9000"
-    environment:
-      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
-    volumes:
-      - sonarqube_data:/opt/sonarqube/data
-      - sonarqube_extensions:/opt/sonarqube/extensions
-      - sonarqube_logs:/opt/sonarqube/logs
-    restart: unless-stopped
+# ==================================
+# Docker Compose - Arquitectura de Microservicios
+# ==================================
+#
+# Este archivo orquesta la ejecución de CINCO servicios:
+# - API Gateway (puerto 80) - NUEVO ⭐
+# - Frontend Microservice (puerto 3000)
+# - Backend Microservice (puerto 4000) - Monolito Legacy
+# - Servicio Monitoreo (puerto 5000)
+# - Servicio Operaciones (puerto 6000)
+#
+# El API Gateway centraliza el acceso a todos los servicios.
 
-volumes:
-  sonarqube_data:
-  sonarqube_extensions:
-  sonarqube_logs:
+version: '3.8'
+
+services:
+  # ==================================
+  # API Gateway (NGINX) - NUEVO ⭐
+  # ==================================
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "80:80"      # Puerto público principal
+    depends_on:
+      - backend
+      - frontend
+      - servicio-monitoreo
+      - servicio-operaciones
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  # ==================================
+  # Backend Microservice (Monolito Legacy)
+  # ==================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-microservice
+    ports:
+      - "4000:4000"  # Solo para desarrollo/debug
+    # En producción, usar 'expose' en lugar de 'ports':
+    # expose:
+    #   - "4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - MONITOREO_SERVICE_URL=http://servicio-monitoreo:5000
+      - OPERACIONES_SERVICE_URL=http://servicio-operaciones:6000
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ==================================
+  # Frontend Microservice
+  # ==================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend-microservice
+    ports:
+      - "3000:3000"  # Solo para desarrollo/debug
+    # En producción, usar 'expose' en lugar de 'ports':
+    # expose:
+    #   - "3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - BACKEND_URL=http://backend:4000
+      - MONITOREO_SERVICE_URL=http://servicio-monitoreo:5000
+      - OPERACIONES_SERVICE_URL=http://servicio-operaciones:6000
+    depends_on:
+      - backend
+      - servicio-monitoreo
+      - servicio-operaciones
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ==================================
+  # Servicio de Monitoreo
+  # ==================================
+  servicio-monitoreo:
+    build:
+      context: ./servicio-monitoreo
+      dockerfile: Dockerfile
+    container_name: servicio-monitoreo
+    ports:
+      - "5000:5000"  # Solo para desarrollo/debug
+    # En producción, usar 'expose' en lugar de 'ports':
+    # expose:
+    #   - "5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - CORS_ORIGIN=http://frontend:3000
+      - OPERACIONES_SERVICE_URL=http://servicio-operaciones:6000
+      - USUARIOS_SERVICE_URL=http://backend:4000
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ==================================
+  # Servicio de Operaciones
+  # ==================================
+  servicio-operaciones:
+    build:
+      context: ./servicio-operaciones
+      dockerfile: Dockerfile
+    container_name: servicio-operaciones
+    ports:
+      - "6000:6000"  # Solo para desarrollo/debug
+    # En producción, usar 'expose' en lugar de 'ports':
+    # expose:
+    #   - "6000"
+    environment:
+      - NODE_ENV=production
+      - PORT=6000
+      - CORS_ORIGIN=http://frontend:3000
+      - MONITOREO_SERVICE_URL=http://servicio-monitoreo:5000
+      - USUARIOS_SERVICE_URL=http://backend:4000
+    depends_on:
+      - servicio-monitoreo
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:6000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# ==================================
+# Network Configuration
+# ==================================
+networks:
+  microservices-network:
+    driver: bridge
+    name: sistema-monitoreo-network
+
+# ==================================
+# Volumes (si se necesitan en el futuro)
+# ==================================
+# volumes:
+#   backend-data:
+#   frontend-data:
+#   monitoreo-data:
+#   operaciones-data:
