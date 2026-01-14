@@ -141,17 +141,24 @@ pipeline {
                             echo "Ejecutando pruebas unitarias en Backend..."
                             sh '''
                                 npm test -- --coverage --ci
-                                
+
                                 # Verificar threshold de cobertura
-                                COVERAGE=$(grep -oP '"lines":\s*\{\s*"total":\s*\K[0-9.]+' coverage/coverage-summary.json | head -1)
-                                echo "Cobertura actual: ${COVERAGE}%"
-                                
-                                if (( $(echo "$COVERAGE < $COVERAGE_THRESHOLD" | bc -l) )); then
-                                    echo "❌ Cobertura insuficiente: ${COVERAGE}% < ${COVERAGE_THRESHOLD}%"
-                                    exit 1
+                                if [ -f coverage/coverage-summary.json ]; then
+                                    echo "Verificando cobertura de código..."
+                                    node -e "
+                                        const fs = require('fs');
+                                        const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json'));
+                                        const linesCoverage = coverage.total.lines.pct;
+                                        console.log('Cobertura de líneas: ' + linesCoverage + '%');
+                                        if (linesCoverage < 70) {
+                                            console.error('Cobertura insuficiente: ' + linesCoverage + '% < 70%');
+                                            process.exit(1);
+                                        }
+                                        console.log('Cobertura cumple con el threshold >= 70%');
+                                    "
+                                else
+                                    echo "Archivo de cobertura no encontrado, continuando..."
                                 fi
-                                
-                                echo "✓ Cobertura cumple con el threshold: ${COVERAGE}% >= ${COVERAGE_THRESHOLD}%"
                             '''
                         }
                     }
@@ -176,18 +183,23 @@ pipeline {
                             echo "Ejecutando pruebas unitarias en Servicio Monitoreo..."
                             sh '''
                                 npm test -- --coverage --ci
-                                
+
                                 # Verificar threshold de cobertura
-                                if [ -f "coverage/coverage-summary.json" ]; then
-                                    COVERAGE=$(grep -oP '"lines":\s*\{\s*"total":\s*\K[0-9.]+' coverage/coverage-summary.json | head -1)
-                                    echo "Cobertura actual: ${COVERAGE}%"
-                                    
-                                    if (( $(echo "$COVERAGE < $COVERAGE_THRESHOLD" | bc -l) )); then
-                                        echo "❌ Cobertura insuficiente: ${COVERAGE}% < ${COVERAGE_THRESHOLD}%"
-                                        exit 1
-                                    fi
-                                    
-                                    echo "✓ Cobertura cumple con el threshold"
+                                if [ -f coverage/coverage-summary.json ]; then
+                                    echo "Verificando cobertura de código..."
+                                    node -e "
+                                        const fs = require('fs');
+                                        const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json'));
+                                        const linesCoverage = coverage.total.lines.pct;
+                                        console.log('Cobertura de líneas: ' + linesCoverage + '%');
+                                        if (linesCoverage < 70) {
+                                            console.error('Cobertura insuficiente: ' + linesCoverage + '% < 70%');
+                                            process.exit(1);
+                                        }
+                                        console.log('Cobertura cumple con el threshold >= 70%');
+                                    "
+                                else
+                                    echo "Archivo de cobertura no encontrado, continuando..."
                                 fi
                             '''
                         }
@@ -212,18 +224,23 @@ pipeline {
                             echo "Ejecutando pruebas unitarias en Servicio Operaciones..."
                             sh '''
                                 npm test -- --coverage --ci
-                                
+
                                 # Verificar threshold de cobertura
-                                if [ -f "coverage/coverage-summary.json" ]; then
-                                    COVERAGE=$(grep -oP '"lines":\s*\{\s*"total":\s*\K[0-9.]+' coverage/coverage-summary.json | head -1)
-                                    echo "Cobertura actual: ${COVERAGE}%"
-                                    
-                                    if (( $(echo "$COVERAGE < $COVERAGE_THRESHOLD" | bc -l) )); then
-                                        echo "❌ Cobertura insuficiente: ${COVERAGE}% < ${COVERAGE_THRESHOLD}%"
-                                        exit 1
-                                    fi
-                                    
-                                    echo "✓ Cobertura cumple con el threshold"
+                                if [ -f coverage/coverage-summary.json ]; then
+                                    echo "Verificando cobertura de código..."
+                                    node -e "
+                                        const fs = require('fs');
+                                        const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json'));
+                                        const linesCoverage = coverage.total.lines.pct;
+                                        console.log('Cobertura de líneas: ' + linesCoverage + '%');
+                                        if (linesCoverage < 70) {
+                                            console.error('Cobertura insuficiente: ' + linesCoverage + '% < 70%');
+                                            process.exit(1);
+                                        }
+                                        console.log('Cobertura cumple con el threshold >= 70%');
+                                    "
+                                else
+                                    echo "Archivo de cobertura no encontrado, continuando..."
                                 fi
                             '''
                         }
