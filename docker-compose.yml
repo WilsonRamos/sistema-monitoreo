@@ -1,19 +1,48 @@
 # ==================================
-# Docker Compose - Arquitectura de Microservicios
+# Docker Compose - Arquitectura de Microservicios + CI/CD
 # ==================================
 #
-# Este archivo orquesta la ejecución de CINCO servicios:
-# - API Gateway (puerto 80) - NUEVO 
+# Este archivo orquesta la ejecución de SEIS servicios + Jenkins CI/CD:
+# - API Gateway (puerto 80) - Punto de entrada único
 # - Frontend Microservice (puerto 3000)
 # - Backend Microservice (puerto 4000) - Monolito Legacy
 # - Servicio Monitoreo (puerto 5000)
 # - Servicio Operaciones (puerto 6000)
+# - Jenkins CI/CD (puerto 8080) - NUEVO
 #
 # El API Gateway centraliza el acceso a todos los servicios.
 
 version: '3.8'
 
 services:
+  # ==================================
+  # Jenkins CI/CD Server - NUEVO
+  # ==================================
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins-cicd
+    privileged: true
+    user: root
+    ports:
+      - "9090:8080"   # Jenkins Web UI (puerto externo cambiado a 9090)
+      - "50001:50000" # Jenkins Agent (puerto externo cambiado a 50001)
+    # environment:
+      # JENKINS_OPTS y JAVA_OPTS comentados para configuración por defecto
+      # - JENKINS_OPTS=--prefix=/jenkins
+      # - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/login || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
   # ==================================
   # API Gateway (NGINX) - NUEVO 
   # ==================================
@@ -169,10 +198,14 @@ networks:
     name: sistema-monitoreo-network
 
 # ==================================
-# Volumes (si se necesitan en el futuro)
+# Volumes Configuration
 # ==================================
-# volumes:
-#   backend-data:
-#   frontend-data:
-#   monitoreo-data:
-#   operaciones-data:
+volumes:
+  jenkins_home:
+    driver: local
+    name: jenkins_home_data
+  # Si se necesitan más volúmenes en el futuro:
+  # backend-data:
+  # frontend-data:
+  # monitoreo-data:
+  # operaciones-data:
